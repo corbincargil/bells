@@ -1,37 +1,41 @@
 import { Outlet } from "react-router";
 
+const links = [
+  {
+    link: "/",
+    label: "Home",
+  },
+  {
+    link: "/notifications",
+    label: "Notifications",
+  },
+  {
+    link: "/webhooks",
+    label: "Webhooks",
+  },
+  {
+    link: "/settings",
+    label: "Settings",
+  },
+];
+
 const RootLayout = () => {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white shadow-sm border-b border-gray-200">
+    <div className="min-h-screen text-foreground bg-background flex flex-col">
+      <header className="bg-background shadow-sm border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <h1 className="text-xl font-semibold text-gray-900">Bells</h1>
-            <nav className="flex space-x-8">
-              <a
-                href="/"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              >
-                Home
-              </a>
-              <a
-                href="/notifications"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              >
-                Notifications
-              </a>
-              <a
-                href="/settings"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              >
-                Settings
-              </a>
-              <a
-                href="/webhooks"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              >
-                Webhooks
-              </a>
+            <h1 className="text-3xl font-bold text-foreground">Bells</h1>
+            <nav className="flex">
+              {links.map((l) => (
+                <a
+                  key={l.link}
+                  href={l.link}
+                  className="m-1 text-foreground hover:text-primary px-3 py-2 rounded-md text-lg font-semibold transition-all"
+                >
+                  {l.label}
+                </a>
+              ))}
             </nav>
           </div>
         </div>
@@ -41,10 +45,12 @@ const RootLayout = () => {
         <Outlet />
       </main>
 
-      <footer className="bg-white border-t border-gray-200">
+      <footer className="bg-background border-t border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <p className="text-center text-gray-500 text-sm">
-            &copy; 2025 Bells App
+          <p className="text-center text-foreground text-sm">
+            <a href="https://github.com/corbincargil/bells">
+              &copy; 2025 Bells App
+            </a>
           </p>
         </div>
       </footer>
