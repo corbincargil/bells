@@ -1,8 +1,8 @@
 package service
 
 import (
-	database "github.com/corbincargil/bells/internal/db"
-	"github.com/corbincargil/bells/internal/model"
+	database "github.com/corbincargil/bells/server/internal/db"
+	"github.com/corbincargil/bells/server/internal/model"
 )
 
 type NotificationService struct {

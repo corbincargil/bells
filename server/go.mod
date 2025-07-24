@@ -1,4 +1,4 @@
-module github.com/corbincargil/bells
+module github.com/corbincargil/bells/server
 
 go 1.23.0
 

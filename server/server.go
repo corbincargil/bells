@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"os"
 
-	database "github.com/corbincargil/bells/internal/db"
-	"github.com/corbincargil/bells/internal/handler"
-	"github.com/corbincargil/bells/internal/service"
+	database "github.com/corbincargil/bells/server/internal/db"
+	"github.com/corbincargil/bells/server/internal/handler"
+	"github.com/corbincargil/bells/server/internal/service"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/joho/godotenv"
 )

@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/corbincargil/bells/internal/service"
+	"github.com/corbincargil/bells/server/internal/service"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -21,21 +21,20 @@ func NewNotificationHandler(notificationService *service.NotificationService) *N
 	return &NotificationHandler{notificationService: notificationService}
 }
 
-
 func (h *NotificationHandler) NotificationHandler(w http.ResponseWriter, req *http.Request) {
 	if req.Method == GET {
 		notifications, err := h.notificationService.GetAllNotifications()
 
 		if err != nil {
 			log.Panic("Error fetching notifications: %w", err)
-        	return
+			return
 		}
-		
+
 		json, err := json.Marshal(notifications)
 		if err != nil {
 			log.Panic("Error converting notifications to json: ", err)
 		}
-		
+
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(json)
 	}
