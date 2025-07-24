@@ -21,26 +21,35 @@ func NewNotificationHandler(notificationService *service.NotificationService) *N
 	return &NotificationHandler{notificationService: notificationService}
 }
 
-func (h *NotificationHandler) NotificationHandler(w http.ResponseWriter, req *http.Request) {
-	if req.Method == GET {
-		notifications, err := h.notificationService.GetAllNotifications()
+func (h *NotificationHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	switch req.Method {
+	case http.MethodGet:
+		h.GetAllNotifications(w, req)
+	case http.MethodPost:
+		h.CreateNotification(w, req)
+	default:
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
 
-		if err != nil {
-			log.Panic("Error fetching notifications: %w", err)
-			return
-		}
+func (h *NotificationHandler) GetAllNotifications(w http.ResponseWriter, req *http.Request) {
+	notifications, err := h.notificationService.GetAllNotifications()
 
-		json, err := json.Marshal(notifications)
-		if err != nil {
-			log.Panic("Error converting notifications to json: ", err)
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(json)
+	if err != nil {
+		log.Panic("Error fetching notifications: %w", err)
+		return
 	}
 
-	if req.Method == POST {
-		fmt.Fprintf(w, "Post request\n")
+	json, err := json.Marshal(notifications)
+	if err != nil {
+		log.Panic("Error converting notifications to json: ", err)
 	}
 
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(json)
+
+}
+
+func (h *NotificationHandler) CreateNotification(w http.ResponseWriter, req *http.Request) {
+	fmt.Fprintf(w, "Post request\n")
 }

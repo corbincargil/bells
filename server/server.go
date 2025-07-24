@@ -7,7 +7,7 @@ import (
 	"os"
 
 	database "github.com/corbincargil/bells/server/internal/db"
-	"github.com/corbincargil/bells/server/internal/handler"
+	"github.com/corbincargil/bells/server/internal/router"
 	"github.com/corbincargil/bells/server/internal/service"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/joho/godotenv"
@@ -23,9 +23,9 @@ func main() {
 	defer db.Close()
 
 	notificationService := service.NewNotificationService(db)
-	notificationHandler := handler.NewNotificationHandler(notificationService)
 
-	http.HandleFunc("/api/notifications", notificationHandler.NotificationHandler)
+	v1router := router.NewV1Router(db, notificationService)
+	v1router.SetupRoutes()
 
 	port := os.Getenv("PORT")
 	addr := fmt.Sprintf(":%s", port)

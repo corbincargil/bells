@@ -22,6 +22,10 @@ func DatabaseConnect() *Database {
 	return &Database{db: sqlDB}
 }
 
+func (d *Database) Ping() error {
+	return d.db.Ping()
+}
+
 func (d *Database) Close() {
 	err := d.db.Close()
 	if err != nil {
