@@ -1,23 +1,5 @@
+import NavBar from "@/components/nav-bar";
 import { Outlet } from "react-router";
-
-const links = [
-  {
-    link: "/",
-    label: "Home",
-  },
-  {
-    link: "/notifications",
-    label: "Notifications",
-  },
-  {
-    link: "/webhooks",
-    label: "Webhooks",
-  },
-  {
-    link: "/settings",
-    label: "Settings",
-  },
-];
 
 const RootLayout = () => {
   return (
@@ -26,17 +8,7 @@ const RootLayout = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <h1 className="text-3xl font-bold text-foreground">Bells</h1>
-            <nav className="flex">
-              {links.map((l) => (
-                <a
-                  key={l.link}
-                  href={l.link}
-                  className="m-1 text-foreground hover:text-primary px-3 py-2 rounded-md text-lg font-semibold transition-all"
-                >
-                  {l.label}
-                </a>
-              ))}
-            </nav>
+            <NavBar />
           </div>
         </div>
       </header>
