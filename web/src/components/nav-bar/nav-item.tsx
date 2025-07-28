@@ -5,7 +5,7 @@ const NavItem = ({ item }: { item: NavLink }) => {
     <a
       key={item.link}
       href={item.link}
-      className="m-1 text-foreground hover:text-primary px-3 py-2 rounded-md text-lg font-semibold transition-all"
+      className=" my-auto px-3 py-2 text-foreground hover:text-primary rounded-md text-lg font-semibold transition-all"
     >
       {item.label}
     </a>

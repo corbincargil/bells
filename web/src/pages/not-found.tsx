@@ -1,4 +1,4 @@
-const Loading = () => {
+const NotFound = () => {
   return (
     <div>
       <p>404 page not found...</p>
@@ -6,4 +6,4 @@ const Loading = () => {
   );
 };
 
-export default Loading;
+export default NotFound;

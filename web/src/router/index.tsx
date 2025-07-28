@@ -1,29 +1,59 @@
 import { Routes, Route } from "react-router";
 import { Suspense, lazy } from "react";
 import RootLayout from "../layouts/root-layout";
+import PublicLayout from "../layouts/public-layout";
 import Loading from "@/pages/loading";
 
-const Home = lazy(() => import("@/pages/home"));
-const Notifications = lazy(() => import("@/pages/notifications"));
-const Webhooks = lazy(() => import("@/pages/webhooks"));
-const Settings = lazy(() => import("@/pages/settings"));
+const Home = lazy(() => import("@/pages/(protected)/home"));
+const Notifications = lazy(() => import("@/pages/(protected)/notifications"));
+const Webhooks = lazy(() => import("@/pages/(protected)/webhooks"));
+const Settings = lazy(() => import("@/pages/(protected)/settings"));
 const NotFound = lazy(() => import("@/pages/not-found"));
+const SignIn = lazy(() => import("@/pages/sign-in"));
+const SignUp = lazy(() => import("@/pages/sign-up"));
 
 export enum AppRoutes {
   ROOT = "/",
   NOTIFICATIONS = "/notifications",
   SETTINGS = "/settings",
   WEBHOOKS = "/webhooks",
+  SIGN_IN = "/sign-in",
+  SIGN_UP = "/sign-up",
+  NOT_FOUND = "/404",
+  CATCH_ALL = "*",
 }
 
 export default function AppRouter() {
   return (
     <Routes>
-      <Route path="/" element={<RootLayout />}>
+      {/* Public routes */}
+      <Route path={AppRoutes.SIGN_IN} element={<PublicLayout />}>
+        <Route
+          index
+          element={
+            <Suspense fallback={<Loading />}>
+              <SignIn />
+            </Suspense>
+          }
+        />
+      </Route>
+      <Route path={AppRoutes.SIGN_UP} element={<PublicLayout />}>
+        <Route
+          index
+          element={
+            <Suspense fallback={<Loading />}>
+              <SignUp />
+            </Suspense>
+          }
+        />
+      </Route>
+
+      {/* Protected routes */}
+      <Route path={AppRoutes.ROOT} element={<RootLayout />}>
         <Route index element={<Home />} />
 
         <Route
-          path="notifications"
+          path={AppRoutes.NOTIFICATIONS}
           element={
             <Suspense fallback={<Loading />}>
               <Notifications />
@@ -32,7 +62,7 @@ export default function AppRouter() {
         />
 
         <Route
-          path="settings"
+          path={AppRoutes.SETTINGS}
           element={
             <Suspense fallback={<Loading />}>
               <Settings />
@@ -41,7 +71,7 @@ export default function AppRouter() {
         />
 
         <Route
-          path="webhooks"
+          path={AppRoutes.WEBHOOKS}
           element={
             <Suspense fallback={<Loading />}>
               <Webhooks />
@@ -50,7 +80,7 @@ export default function AppRouter() {
         />
 
         <Route
-          path="404"
+          path={AppRoutes.NOT_FOUND}
           element={
             <Suspense fallback={<Loading />}>
               <NotFound />
@@ -59,7 +89,7 @@ export default function AppRouter() {
         />
 
         <Route
-          path="*"
+          path={AppRoutes.CATCH_ALL}
           element={
             <Suspense fallback={<Loading />}>
               <NotFound />
