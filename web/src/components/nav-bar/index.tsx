@@ -5,17 +5,17 @@ import { UserButton } from "@clerk/clerk-react";
 
 const NavBar = () => {
   return (
-    <>
+    <div className="flex items-center justify-between">
       <nav className="hidden sm:flex">
         {links.map((l) => (
           <NavItem key={l.link} item={l} />
         ))}
-        <div key="user-button" className="px-3 flex items-center">
-          <UserButton />
-        </div>
       </nav>
-      <MobileNavBar links={links} className="block sm:hidden" />
-    </>
+      <MobileNavBar links={links} className="sm:hidden flex items-center" />
+      <div key="user-button" className="px-3 flex items-center">
+        <UserButton />
+      </div>
+    </div>
   );
 };
 
