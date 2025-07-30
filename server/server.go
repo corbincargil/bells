@@ -23,8 +23,9 @@ func main() {
 	defer db.Close()
 
 	notificationService := service.NewNotificationService(db)
+	webhookService := service.NewWebhookService(db)
 
-	v1router := router.NewV1Router(db, notificationService)
+	v1router := router.NewV1Router(db, notificationService, webhookService)
 	v1router.SetupRoutes()
 
 	port := os.Getenv("PORT")

@@ -14,10 +14,11 @@ import (
 type V1Router struct {
 	db                  *database.Database
 	notificationHandler *handler.NotificationHandler
+	webhookHandler      *handler.WebhookHandler
 }
 
-func NewV1Router(db *database.Database, n *service.NotificationService) *V1Router {
-	return &V1Router{db: db, notificationHandler: handler.NewNotificationHandler(n)}
+func NewV1Router(db *database.Database, n *service.NotificationService, w *service.WebhookService) *V1Router {
+	return &V1Router{db: db, notificationHandler: handler.NewNotificationHandler(n), webhookHandler: handler.NewWebhookHandler(w)}
 }
 
 func (v *V1Router) SetupRoutes() {
@@ -29,4 +30,7 @@ func (v *V1Router) SetupRoutes() {
 
 	//* notifications
 	http.Handle("/api/v1/notifications", middleware.WithAuth(v.db, v.notificationHandler))
+
+	//* webhooks
+	http.Handle("/api/v1/webhooks", middleware.WithAuth(v.db, v.webhookHandler))
 }

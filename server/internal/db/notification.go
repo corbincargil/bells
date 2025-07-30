@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 
@@ -10,6 +11,9 @@ import (
 func (db *Database) GetNotificationsByUserId(userId int) ([]model.Notification, error) {
 	rows, err := db.db.Query("SELECT * FROM notifications WHERE user_id = $1", userId)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("no notifications found for user: %d", userId)
+		}
 		log.Print("Error fetching notifications: ", err)
 		return nil, fmt.Errorf("error fetching user's notifications: %w", err)
 	}

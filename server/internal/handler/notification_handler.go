@@ -10,9 +10,6 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
-const GET = "GET"
-const POST = "POST"
-
 type NotificationHandler struct {
 	notificationService *service.NotificationService
 }
