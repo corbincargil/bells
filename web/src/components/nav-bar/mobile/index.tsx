@@ -1,6 +1,7 @@
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Menu } from "lucide-react";
 import type { NavLink } from "../types";
+import { Link } from "react-router";
 
 const MobileNavBar = ({
   links,
@@ -18,13 +19,13 @@ const MobileNavBar = ({
         <DrawerContent>
           <nav className="flex flex-col items-center">
             {links.map((l) => (
-              <a
+              <Link
                 key={l.link}
-                href={l.link}
+                to={l.link}
                 className="m-1 text-foreground hover:text-primary px-3 py-2 rounded-md text-lg font-semibold transition-all"
               >
                 {l.label}
-              </a>
+              </Link>
             ))}
           </nav>
         </DrawerContent>

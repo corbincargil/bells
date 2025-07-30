@@ -50,7 +50,14 @@ export default function AppRouter() {
 
       {/* Protected routes */}
       <Route path={AppRoutes.ROOT} element={<RootLayout />}>
-        <Route index element={<Home />} />
+        <Route
+          index
+          element={
+            <Suspense fallback={<Loading />}>
+              <Home />
+            </Suspense>
+          }
+        />
 
         <Route
           path={AppRoutes.NOTIFICATIONS}
