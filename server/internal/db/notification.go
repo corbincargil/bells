@@ -1,15 +1,17 @@
 package database
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/corbincargil/bells/server/internal/model"
 )
 
-func (db *Database) GetAllNotifications() ([]model.Notification, error) {
-	rows, err := db.db.Query("SELECT * FROM notifications")
+func (db *Database) GetNotificationsByUserId(userId int) ([]model.Notification, error) {
+	rows, err := db.db.Query("SELECT * FROM notifications WHERE user_id = $1", userId)
 	if err != nil {
-		log.Fatal("Error fetching notifications: ", err)
+		log.Print("Error fetching notifications: ", err)
+		return nil, fmt.Errorf("error fetching user's notifications: %w", err)
 	}
 	defer rows.Close()
 	var notifications []model.Notification

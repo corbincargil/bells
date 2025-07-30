@@ -24,7 +24,7 @@ func NewNotificationHandler(notificationService *service.NotificationService) *N
 func (h *NotificationHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case http.MethodGet:
-		h.GetAllNotifications(w, req)
+		h.GetUserNotifications(w, req)
 	case http.MethodPost:
 		h.CreateNotification(w, req)
 	default:
@@ -32,22 +32,22 @@ func (h *NotificationHandler) ServeHTTP(w http.ResponseWriter, req *http.Request
 	}
 }
 
-func (h *NotificationHandler) GetAllNotifications(w http.ResponseWriter, req *http.Request) {
-	notifications, err := h.notificationService.GetAllNotifications()
-
+func (h *NotificationHandler) GetUserNotifications(w http.ResponseWriter, req *http.Request) {
+	notifications, err := h.notificationService.GetUserNotifications(req.Context())
 	if err != nil {
-		log.Panic("Error fetching notifications: %w", err)
+		log.Printf("Error fetching notifications: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{"error": "Error fetching notifications"}`))
 		return
 	}
 
 	json, err := json.Marshal(notifications)
 	if err != nil {
-		log.Panic("Error converting notifications to json: ", err)
+		log.Printf("Error fetching notifications: %v", err)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(json)
-
 }
 
 func (h *NotificationHandler) CreateNotification(w http.ResponseWriter, req *http.Request) {

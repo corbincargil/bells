@@ -28,5 +28,5 @@ func (v *V1Router) SetupRoutes() {
 	http.Handle("/api/v1/health", healthHandler)
 
 	//* notifications
-	http.Handle("/api/v1/notifications", middleware.WithAuth(v.notificationHandler))
+	http.Handle("/api/v1/notifications", middleware.WithAuth(v.db, v.notificationHandler))
 }
