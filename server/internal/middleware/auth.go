@@ -8,14 +8,14 @@ import (
 	"github.com/clerk/clerk-sdk-go/v2"
 	clerkhttp "github.com/clerk/clerk-sdk-go/v2/http"
 	"github.com/corbincargil/bells/server/internal/constants"
-	database "github.com/corbincargil/bells/server/internal/db"
+	"github.com/corbincargil/bells/server/internal/service"
 )
 
-func WithAuth(db *database.Database, handler http.Handler) http.Handler {
-	return clerkhttp.WithHeaderAuthorization()(checkClerkAuth(db, handler))
+func WithAuth(userService *service.UserService, handler http.Handler) http.Handler {
+	return clerkhttp.WithHeaderAuthorization()(checkClerkAuth(userService, handler))
 }
 
-func checkClerkAuth(db *database.Database, next http.Handler) http.Handler {
+func checkClerkAuth(userService *service.UserService, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		claims, ok := clerk.SessionClaimsFromContext(r.Context())
 		if !ok {
@@ -34,16 +34,16 @@ func checkClerkAuth(db *database.Database, next http.Handler) http.Handler {
 			return
 		}
 
-		internalUserId, err := db.GetUserIDByClerkID(clerkUserID)
+		user, err := userService.GetOrCreateUser(clerkUserID)
 		if err != nil {
-			log.Printf("Could not find user")
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte(`{"access": "unauthorized", "message": "could not find user with that clerk id"}`))
+			log.Printf("Could not get or create user: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(`{"access": "error", "message": "failed to process user"}`))
 			return
 		}
 
 		ctx := context.WithValue(r.Context(), constants.ClerkUserIDKey, clerkUserID)
-		ctx = context.WithValue(ctx, constants.InternalUserIDKey, internalUserId)
+		ctx = context.WithValue(ctx, constants.InternalUserIDKey, user.ID)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

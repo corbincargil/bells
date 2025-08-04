@@ -16,10 +16,17 @@ type V1Router struct {
 	notificationHandler *handler.NotificationHandler
 	webhookHandler      *handler.WebhookHandler
 	subscriptionHandler *handler.SubscriptionHandler
+	userService         *service.UserService
 }
 
 func NewV1Router(db *database.Database, n *service.NotificationService, w *service.WebhookService, s *service.SubscriptionService) *V1Router {
-	return &V1Router{db: db, notificationHandler: handler.NewNotificationHandler(n), webhookHandler: handler.NewWebhookHandler(w), subscriptionHandler: handler.NewSubscriptionHandler(s)}
+	return &V1Router{
+		db:                  db,
+		userService:         service.NewUserService(db),
+		notificationHandler: handler.NewNotificationHandler(n),
+		webhookHandler:      handler.NewWebhookHandler(w),
+		subscriptionHandler: handler.NewSubscriptionHandler(s),
+	}
 }
 
 func (v *V1Router) SetupRoutes() {
@@ -30,11 +37,11 @@ func (v *V1Router) SetupRoutes() {
 	http.Handle("/api/v1/health", healthHandler)
 
 	//* notifications
-	http.Handle("/api/v1/notifications", middleware.WithAuth(v.db, v.notificationHandler))
+	http.Handle("/api/v1/notifications", middleware.WithAuth(v.userService, v.notificationHandler))
 
 	//* webhooks
-	http.Handle("/api/v1/webhooks", middleware.WithAuth(v.db, v.webhookHandler))
+	http.Handle("/api/v1/webhooks", middleware.WithAuth(v.userService, v.webhookHandler))
 
 	//* push subscriptions
-	http.Handle("/api/v1/subscriptions", middleware.WithAuth(v.db, v.subscriptionHandler))
+	http.Handle("/api/v1/subscriptions", middleware.WithAuth(v.userService, v.subscriptionHandler))
 }
