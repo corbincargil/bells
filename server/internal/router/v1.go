@@ -1,10 +1,12 @@
 package router
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
 	"github.com/clerk/clerk-sdk-go/v2"
+	"github.com/corbincargil/bells/server/internal/constants"
 	database "github.com/corbincargil/bells/server/internal/db"
 	"github.com/corbincargil/bells/server/internal/handler"
 	"github.com/corbincargil/bells/server/internal/middleware"
@@ -33,8 +35,14 @@ func (v *V1Router) SetupRoutes() {
 	clerk.SetKey(os.Getenv("CLERK_SECRET_KEY"))
 
 	//* health
-	healthHandler := handler.NewHealthHandler(v.db)
-	http.Handle("/api/v1/health", healthHandler)
+	publicHealthHandler := handler.NewPublicHealthHandler(v.db)
+	http.Handle("/api/v1/health", publicHealthHandler)
+
+	//* incoming webhooks
+	incomingWebhookPath := fmt.Sprintf("/{%s}/webhook/{%s}", constants.UserPrefix, constants.WebhookSlug)
+
+	publicWebhookHandler := handler.NewPublicWebhookHandler(v.db)
+	http.Handle(incomingWebhookPath, publicWebhookHandler)
 
 	//* notifications
 	http.Handle("/api/v1/notifications", middleware.WithAuth(v.userService, v.notificationHandler))

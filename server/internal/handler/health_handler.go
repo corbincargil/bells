@@ -11,7 +11,7 @@ type HealthHandler struct {
 	db *database.Database
 }
 
-func NewHealthHandler(db *database.Database) *HealthHandler {
+func NewPublicHealthHandler(db *database.Database) *HealthHandler {
 	return &HealthHandler{db: db}
 }
 

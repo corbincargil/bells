@@ -2,5 +2,14 @@ package constants
 
 type key string
 
-const ClerkUserIDKey key = "clerk_user_id"
-const InternalUserIDKey key = "user_id"
+// * Context keys
+const (
+	ClerkUserIDKey    key = "clerk_user_id"
+	InternalUserIDKey key = "user_id"
+)
+
+// * Webhook public path keys
+const (
+	UserPrefix  = "user_prefix"
+	WebhookSlug = "webhook_slug"
+)
