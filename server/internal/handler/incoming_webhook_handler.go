@@ -6,56 +6,24 @@ import (
 
 	"github.com/corbincargil/bells/server/internal/apperrors"
 	"github.com/corbincargil/bells/server/internal/constants"
-	database "github.com/corbincargil/bells/server/internal/db"
+	"github.com/corbincargil/bells/server/internal/service"
 )
 
 type PublicWebhookHandler struct {
-	db *database.Database
+	webhookService *service.WebhookService
 }
 
-func NewPublicWebhookHandler(db *database.Database) *PublicWebhookHandler {
-	return &PublicWebhookHandler{db: db}
+func NewPublicWebhookHandler(s *service.WebhookService) *PublicWebhookHandler {
+	return &PublicWebhookHandler{webhookService: s}
 }
 
 func (h *PublicWebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	incomingUserPrefix := req.PathValue(constants.UserPrefix)
 	incomingWebhookSlug := req.PathValue(constants.WebhookSlug)
 
-	//* lookup user
-	user, err := h.db.GetUserByPrefix(incomingUserPrefix)
+	verifiedWebhook, err := h.webhookService.FindAndVerifyWebhook(incomingUserPrefix, incomingWebhookSlug)
 	if err != nil {
-		log.Printf("Error fetching user with prefix %s. Reason: %v", incomingUserPrefix, err)
-		apperrors.WriteJSONError(w, http.StatusNotFound, "webhook not found") //* return generic error
-		return
-	}
-
-	//* lookup user webhooks
-	webhooks, err := h.db.GetWebhooksByUserId(user.ID)
-	if err != nil {
-		log.Printf("Error fetching webhooks for user %d. Reason: %v", user.ID, err)
-		apperrors.WriteJSONError(w, http.StatusInternalServerError, "internal server error")
-		return
-	}
-
-	//* confirm user owns webhook
-	userWebhookSlugs := make(map[string]int, len(webhooks))
-	for i, w := range webhooks {
-		userWebhookSlugs[w.Slug] = i
-	}
-
-	index, exists := userWebhookSlugs[incomingWebhookSlug]
-	if !exists {
-		log.Printf("No matching webhook found for user prefix %s and slug %s", incomingUserPrefix, incomingWebhookSlug)
-		apperrors.WriteJSONError(w, http.StatusNotFound, "webhook not found") //* return generic error
-		return
-	}
-
-	verifiedWebhook := webhooks[index]
-
-	//* confirm webhook is active
-	if !verifiedWebhook.IsActive {
-		log.Printf("Incoming request received for inactive webhhook: %d", verifiedWebhook.ID)
-		apperrors.WriteJSONError(w, http.StatusNotFound, "webhook not found") //* return generic error
+		apperrors.WriteJSONError(w, http.StatusNotFound, err.Error())
 		return
 	}
 

@@ -34,7 +34,7 @@ func (s *UserService) CreateUser(clerkUserId string) (*model.User, error) {
 }
 
 func (s *UserService) GetOrCreateUser(clerkUserID string) (*model.User, error) {
-	userID, err := s.db.GetUserIDByClerkID(clerkUserID)
+	userID, err := s.db.GetUserIdByClerkID(clerkUserID)
 	if err == nil {
 		return &model.User{ID: userID, ClerkUserID: clerkUserID}, nil
 	}
