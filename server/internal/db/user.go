@@ -13,7 +13,7 @@ type CreateUserParams struct {
 	Prefix      string
 }
 
-func (db *Database) GetUserIDByClerkID(clerkUserId string) (int, error) {
+func (db *Database) GetUserIdByClerkID(clerkUserId string) (int, error) {
 	var userId int
 	if err := db.db.QueryRow("SELECT id FROM users WHERE clerk_user_id = $1", clerkUserId).Scan(&userId); err != nil {
 		if err == sql.ErrNoRows {
@@ -24,25 +24,18 @@ func (db *Database) GetUserIDByClerkID(clerkUserId string) (int, error) {
 	return userId, nil
 }
 
-func (db *Database) GetUserByPrefix(prefix string) (*model.User, error) {
-	var user model.User
-	err := db.db.QueryRow("SELECT id, uuid, clerk_user_id, user_prefix, created_at, updated_at FROM users WHERE user_prefix = $1", prefix).Scan(
-		&user.ID,
-		&user.UUID,
-		&user.ClerkUserID,
-		&user.UserPrefix,
-		&user.CreatedAt,
-		&user.UpdatedAt,
-	)
+func (db *Database) GetUserIdByPrefix(prefix string) (int, error) {
+	var userId int
+	err := db.db.QueryRow("SELECT id FROM users WHERE user_prefix = $1", prefix).Scan(&userId)
 	if err != nil {
-		log.Println(err)
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("no users found with prefix: %s", prefix)
+			return 0, fmt.Errorf("no users found with prefix: %s", prefix)
 		}
-		return nil, fmt.Errorf("could not find user with prefix: %s", prefix)
+		log.Printf("Database error fetching user by prefix %s: %v", prefix, err)
+		return 0, fmt.Errorf("no users found with prefix: %s", prefix)
 	}
 
-	return &user, nil
+	return userId, nil
 }
 
 func (db *Database) CreateUser(userData CreateUserParams) (*model.User, error) {
@@ -64,7 +57,8 @@ func (db *Database) CreateUser(userData CreateUserParams) (*model.User, error) {
 	)
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to create user: %w", err)
+		log.Printf("Database error creating user: %v", err)
+		return nil, fmt.Errorf("failed to create user")
 	}
 
 	return &user, nil
@@ -74,7 +68,8 @@ func (db *Database) IsUserPrefixUnique(prefix string) (bool, error) {
 	var count int
 	err := db.db.QueryRow("SELECT COUNT(*) FROM users WHERE user_prefix = $1", prefix).Scan(&count)
 	if err != nil {
-		return false, err
+		log.Printf("Database error checking user prefix %s for uniqueness: %v", prefix, err)
+		return false, fmt.Errorf("error checking user prefix uniqueness")
 	}
 	return count == 0, nil
 }
