@@ -74,9 +74,7 @@ func (db *Database) CreateWebhook(webhook *model.Webhook) (*model.Webhook, error
 		webhook.NotificationMessage,
 		webhook.IsActive,
 	).Scan(
-		&w.ID,
 		&w.UUID,
-		&w.UserID,
 		&w.Name,
 		&w.Slug,
 		&w.NotificationTitle,

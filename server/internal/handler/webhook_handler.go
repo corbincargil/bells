@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/corbincargil/bells/server/internal/apperrors"
-	"github.com/corbincargil/bells/server/internal/constants"
 	"github.com/corbincargil/bells/server/internal/model"
 	"github.com/corbincargil/bells/server/internal/service"
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -35,7 +34,7 @@ func (h *WebhookHandler) GetUserWebhooks(w http.ResponseWriter, req *http.Reques
 	userId, err := GetUserIDFromContext(req.Context())
 	if err != nil {
 		log.Printf("Could not find user in context: %v", err)
-		apperrors.WriteJSONError(w, http.StatusInternalServerError, "user not found")
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "internal service error")
 		return
 	}
 
@@ -79,10 +78,10 @@ func (h *WebhookHandler) CreateWebhook(w http.ResponseWriter, req *http.Request)
 		isActive = *requestBody.IsActive
 	}
 
-	userId, ok := req.Context().Value(constants.InternalUserIDKey).(int)
-	if !ok {
-		log.Printf("Missing user ID in context")
-		apperrors.WriteJSONError(w, http.StatusInternalServerError, "user not found")
+	userId, err := GetUserIDFromContext(req.Context())
+	if err != nil {
+		log.Printf("Could not find user in context: %v", err)
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "internal service error")
 		return
 	}
 
