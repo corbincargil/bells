@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/corbincargil/bells/server/internal/apperrors"
 	"github.com/corbincargil/bells/server/internal/constants"
 	database "github.com/corbincargil/bells/server/internal/db"
 )
@@ -20,41 +21,41 @@ func (h *PublicWebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Reques
 	incomingUserPrefix := req.PathValue(constants.UserPrefix)
 	incomingWebhookSlug := req.PathValue(constants.WebhookSlug)
 
-	log.Printf("user_prefix: %v\n", incomingUserPrefix)
-	log.Printf("slug: %v\n", incomingWebhookSlug)
-
 	//* lookup user
 	user, err := h.db.GetUserByPrefix(incomingUserPrefix)
 	if err != nil {
-		log.Printf("Error fetching user with prefix %s. Reason: %s", incomingUserPrefix, err)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte(`{"error": "webhook not found"}`))
+		log.Printf("Error fetching user with prefix %s. Reason: %v", incomingUserPrefix, err)
+		apperrors.WriteJSONError(w, http.StatusNotFound, "webhook not found") //* return generic error
 		return
 	}
 
 	//* lookup user webhooks
 	webhooks, err := h.db.GetWebhooksByUserId(user.ID)
 	if err != nil {
-		log.Printf("Error fetching user webhooks: %s", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"error": "Error fetching user webhooks"}`))
+		log.Printf("Error fetching webhooks for user %d. Reason: %v", user.ID, err)
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "internal server error")
 		return
 	}
 
 	//* confirm user owns webhook
-	webhookSlugs := make(map[string]int, len(webhooks))
+	userWebhookSlugs := make(map[string]int, len(webhooks))
 	for i, w := range webhooks {
-		webhookSlugs[w.Slug] = i
+		userWebhookSlugs[w.Slug] = i
 	}
 
-	index := webhookSlugs[incomingWebhookSlug]
+	index, exists := userWebhookSlugs[incomingWebhookSlug]
+	if !exists {
+		log.Printf("No matching webhook found for user prefix %s and slug %s", incomingUserPrefix, incomingWebhookSlug)
+		apperrors.WriteJSONError(w, http.StatusNotFound, "webhook not found") //* return generic error
+		return
+	}
+
 	verifiedWebhook := webhooks[index]
 
 	//* confirm webhook is active
 	if !verifiedWebhook.IsActive {
 		log.Printf("Incoming request received for inactive webhhook: %d", verifiedWebhook.ID)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte(`{"error": "webhook not found"}`))
+		apperrors.WriteJSONError(w, http.StatusNotFound, "webhook not found") //* return generic error
 		return
 	}
 
@@ -63,6 +64,7 @@ func (h *PublicWebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Reques
 	log.Printf("	slug: %s\n", verifiedWebhook.Slug)
 	log.Printf("	isActive: %t\n", verifiedWebhook.IsActive)
 
-	//* create notification record and send push notification (ATOMIC)
-	//* update lastUsed on the webhook
+	//todo: export webhook verification to service layer
+	//todo: create notification record and send push notification (ATOMIC)
+	//todo: update lastUsed on the webhook
 }

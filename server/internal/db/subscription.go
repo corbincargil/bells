@@ -1,7 +1,6 @@
 package database
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 
@@ -11,26 +10,34 @@ import (
 func (db *Database) GetSubscriptionsByUserId(userId int) ([]model.PushSubscription, error) {
 	rows, err := db.db.Query("SELECT * FROM push_subscriptions WHERE user_id = $1", userId)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("no subscriptions found for user: %d", userId)
-		}
-		log.Print("Error fetching subscriptions: ", err)
-		return nil, fmt.Errorf("error fetching user's subscriptions: %w", err)
+		log.Printf("Database error fetching subscriptions for user %d: %v", userId, err)
+		return nil, fmt.Errorf("error fetching subscriptions")
 	}
 	defer rows.Close()
+
 	var subscriptions []model.PushSubscription
 
 	for rows.Next() {
 		var s model.PushSubscription
-		err := rows.Scan(&s.ID, &s.UUID, &s.UserID, &s.IsActive, &s.CreatedAt, &s.UpdatedAt)
+		err := rows.Scan(
+			&s.ID,
+			&s.UUID,
+			&s.UserID,
+			&s.IsActive,
+			&s.CreatedAt,
+			&s.UpdatedAt,
+		)
+
 		if err != nil {
-			return subscriptions, err
+			log.Printf("Error scanning subscriptions: %v", err)
+			return subscriptions, fmt.Errorf("error fetching subscriptions")
 		}
 		subscriptions = append(subscriptions, s)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		log.Printf("Error iterating subscriptions: %v", err)
+		return nil, fmt.Errorf("error fetching subscriptions")
 	}
 
 	return subscriptions, nil

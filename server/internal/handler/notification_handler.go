@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/corbincargil/bells/server/internal/apperrors"
 	"github.com/corbincargil/bells/server/internal/service"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -30,17 +31,25 @@ func (h *NotificationHandler) ServeHTTP(w http.ResponseWriter, req *http.Request
 }
 
 func (h *NotificationHandler) GetUserNotifications(w http.ResponseWriter, req *http.Request) {
-	notifications, err := h.notificationService.GetUserNotifications(req.Context())
+	userId, err := GetUserIDFromContext(req.Context())
+	if err != nil {
+		log.Printf("Could not find user in context: %v", err)
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "internal service error")
+		return
+	}
+
+	notifications, err := h.notificationService.GetUserNotifications(userId)
 	if err != nil {
 		log.Printf("Error fetching notifications: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"error": "Error fetching notifications"}`))
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	json, err := json.Marshal(notifications)
 	if err != nil {
-		log.Printf("Error fetching notifications: %v", err)
+		log.Printf("Error marshalling notifications: %v", err)
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "error fetching notificaitons")
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")

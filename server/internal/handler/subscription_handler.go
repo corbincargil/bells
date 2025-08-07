@@ -31,17 +31,25 @@ func (h *SubscriptionHandler) ServeHTTP(w http.ResponseWriter, req *http.Request
 }
 
 func (h *SubscriptionHandler) GetUserSubscriptions(w http.ResponseWriter, req *http.Request) {
-	subscriptions, err := h.subscriptionService.GetUserSubscriptions(req.Context())
+	userId, err := GetUserIDFromContext(req.Context())
 	if err != nil {
-		log.Printf("Error fetching subscriptions: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"error": "Error fetching subscriptions"}`))
+		log.Printf("Could not find user in context: %v", err)
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "internal service error")
+		return
+	}
+
+	subscriptions, err := h.subscriptionService.GetUserSubscriptions(userId)
+	if err != nil {
+		log.Printf("Error fetching subscriptions for user %d: %v", userId, err)
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	json, err := json.Marshal(subscriptions)
 	if err != nil {
-		log.Printf("Error fetching subscriptions: %v", err)
+		log.Printf("Error marshalling subscriptions: %v", err)
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "error fetching subscriptions")
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -77,7 +85,8 @@ func (h *SubscriptionHandler) CreateSubscription(w http.ResponseWriter, req *htt
 
 	webhook, err := h.subscriptionService.CreateSubscription(&webhookParams)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error creating subscription: %v", err)
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
