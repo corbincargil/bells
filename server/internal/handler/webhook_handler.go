@@ -27,22 +27,30 @@ func (h *WebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	case http.MethodPost:
 		h.CreateWebhook(w, req)
 	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		apperrors.WriteJSONError(w, http.StatusMethodNotAllowed, "Method not allowed")
 	}
 }
 
 func (h *WebhookHandler) GetUserWebhooks(w http.ResponseWriter, req *http.Request) {
-	webhooks, err := h.webhookService.GetUserWebhooks(req.Context())
+	userId, err := GetUserIDFromContext(req.Context())
+	if err != nil {
+		log.Printf("Could not find user in context: %v", err)
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "user not found")
+		return
+	}
+
+	webhooks, err := h.webhookService.GetUserWebhooks(userId)
 	if err != nil {
 		log.Printf("Error fetching webhooks: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"error": "Error fetching webhooks"}`))
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "error fetching webhooks")
 		return
 	}
 
 	json, err := json.Marshal(webhooks)
 	if err != nil {
-		log.Printf("Error fetching webhooks: %v", err)
+		log.Printf("Error marshalling webhook data: %v", err)
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "internal service error")
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -73,7 +81,7 @@ func (h *WebhookHandler) CreateWebhook(w http.ResponseWriter, req *http.Request)
 
 	userId, ok := req.Context().Value(constants.InternalUserIDKey).(int)
 	if !ok {
-		log.Printf("Missing user ID in context: %v", err)
+		log.Printf("Missing user ID in context")
 		apperrors.WriteJSONError(w, http.StatusInternalServerError, "user not found")
 		return
 	}
