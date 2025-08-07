@@ -30,3 +30,7 @@ func (s *SubscriptionService) GetUserSubscriptions(ctx context.Context) ([]model
 
 	return subscriptions, nil
 }
+
+func (s *SubscriptionService) CreateSubscription(subscription *model.PushSubscription) (*model.PushSubscription, error) {
+	return s.db.CreatePushSubscription(subscription)
+}

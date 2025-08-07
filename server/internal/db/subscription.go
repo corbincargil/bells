@@ -35,3 +35,33 @@ func (db *Database) GetSubscriptionsByUserId(userId int) ([]model.PushSubscripti
 
 	return subscriptions, nil
 }
+
+func (db *Database) CreatePushSubscription(webhook *model.PushSubscription) (*model.PushSubscription, error) {
+	query := `
+        INSERT INTO push_subscriptions (
+            user_id,
+            is_active
+        ) 
+        VALUES ($1, $2)
+        RETURNING uuid, is_active, created_at, updated_at
+    `
+
+	var subscription model.PushSubscription
+	err := db.db.QueryRow(
+		query,
+		webhook.UserID,
+		webhook.IsActive,
+	).Scan(
+		&subscription.UUID,
+		&subscription.IsActive,
+		&subscription.CreatedAt,
+		&subscription.UpdatedAt,
+	)
+
+	if err != nil {
+		log.Printf("Database error creating push subscription: %v", err)
+		return nil, fmt.Errorf("unexpected database error")
+	}
+
+	return &subscription, nil
+}

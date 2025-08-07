@@ -10,3 +10,7 @@ type PushSubscription struct {
 	CreatedAt time.Time `db:"created_at" json:"createdAt"`
 	UpdatedAt time.Time `db:"updated_at" json:"updatedAt"`
 }
+
+type CreateSubscriptionRequest struct {
+	IsActive *bool `json:"isActive"`
+}
