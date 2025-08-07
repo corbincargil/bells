@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type Webhook struct {
 	ID                  int        `db:"id"                   json:"-"`
@@ -15,4 +18,45 @@ type Webhook struct {
 	LastUsed            *time.Time `db:"last_used"            json:"lastUsed"`
 	CreatedAt           time.Time  `db:"created_at"           json:"createdAt"`
 	UpdatedAt           time.Time  `db:"updated_at"           json:"updtedAt"`
+}
+
+type CreateWebhookRequest struct {
+	Name                string  `json:"name"`
+	Description         *string `json:"description"`
+	Slug                string  `json:"slug"`
+	NotificationTitle   string  `json:"notificationTitle"`
+	NotificationMessage string  `json:"notificationMessage"`
+	IsActive            *bool   `json:"isActive"`
+}
+
+func (req *CreateWebhookRequest) Validate() error {
+	if req.Name == "" {
+		return fmt.Errorf("name is required")
+	}
+	if req.Slug == "" {
+		return fmt.Errorf("slug is required")
+	}
+	if req.NotificationTitle == "" {
+		return fmt.Errorf("notificationTitle is required")
+	}
+	if req.NotificationMessage == "" {
+		return fmt.Errorf("notificationMessage is required")
+	}
+	return nil
+}
+
+type DuplicateWebhookNameError struct {
+	WebhookName string
+}
+
+func (e *DuplicateWebhookNameError) Error() string {
+	return fmt.Sprintf("webhook with name '%s' already exists for this user", e.WebhookName)
+}
+
+type DuplicateWebhookSlugError struct {
+	WebhookSlug string
+}
+
+func (e *DuplicateWebhookSlugError) Error() string {
+	return fmt.Sprintf("webhook with slug '%s' already exists for this user", e.WebhookSlug)
 }

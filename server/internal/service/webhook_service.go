@@ -30,3 +30,7 @@ func (s *WebhookService) GetUserWebhooks(ctx context.Context) ([]model.Webhook, 
 
 	return webhooks, nil
 }
+
+func (s *WebhookService) CreateWebhook(webhook *model.Webhook) (*model.Webhook, error) {
+	return s.db.CreateWebhook(webhook)
+}

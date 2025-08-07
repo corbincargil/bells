@@ -2,10 +2,12 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/corbincargil/bells/server/internal/apperrors"
+	"github.com/corbincargil/bells/server/internal/constants"
+	"github.com/corbincargil/bells/server/internal/model"
 	"github.com/corbincargil/bells/server/internal/service"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -48,5 +50,50 @@ func (h *WebhookHandler) GetUserWebhooks(w http.ResponseWriter, req *http.Reques
 }
 
 func (h *WebhookHandler) CreateWebhook(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintf(w, "Post request\n")
+	var requestBody model.CreateWebhookRequest
+
+	err := json.NewDecoder(req.Body).Decode(&requestBody)
+	if err != nil {
+		log.Printf("Failed to parse request body: %v", err)
+		apperrors.WriteJSONError(w, http.StatusBadRequest, "invalid json")
+		return
+	}
+
+	err = requestBody.Validate()
+	if err != nil {
+		log.Printf("Webhook request body validation failed: %v", err)
+		apperrors.WriteJSONError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	isActive := true
+	if requestBody.IsActive != nil {
+		isActive = *requestBody.IsActive
+	}
+
+	userId, ok := req.Context().Value(constants.InternalUserIDKey).(int)
+	if !ok {
+		log.Printf("Missing user ID in context: %v", err)
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "user not found")
+		return
+	}
+
+	webhookParams := model.Webhook{
+		UserID:              userId,
+		Name:                requestBody.Name,
+		Slug:                requestBody.Slug,
+		NotificationTitle:   requestBody.NotificationTitle,
+		NotificationMessage: requestBody.NotificationMessage,
+		IsActive:            isActive,
+	}
+
+	webhook, err := h.webhookService.CreateWebhook(&webhookParams)
+	if err != nil {
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(webhook)
 }
