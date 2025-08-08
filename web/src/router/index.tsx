@@ -13,7 +13,7 @@ const SignIn = lazy(() => import("@/pages/sign-in"));
 const SignUp = lazy(() => import("@/pages/sign-up"));
 
 export enum AppRoutes {
-  ROOT = "/",
+  HOME = "/",
   NOTIFICATIONS = "/notifications",
   SETTINGS = "/settings",
   WEBHOOKS = "/webhooks",
@@ -49,7 +49,7 @@ export default function AppRouter() {
       </Route>
 
       {/* Protected routes */}
-      <Route path={AppRoutes.ROOT} element={<RootLayout />}>
+      <Route path={AppRoutes.HOME} element={<RootLayout />}>
         <Route
           index
           element={
