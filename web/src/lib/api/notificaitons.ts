@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { useApiClient } from "./client";
-import type { Notification } from "@/types/notification";
+import type { NotificationWithWebhook } from "@/types/notification";
 
 export const useNotifications = () => {
   const { apiRequest } = useApiClient();
 
-  return useQuery<Notification[]>({
+  return useQuery<NotificationWithWebhook[]>({
     queryKey: ["notifications"],
     queryFn: () => apiRequest("/notifications"),
   });

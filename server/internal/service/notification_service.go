@@ -16,3 +16,7 @@ func NewNotificationService(db *database.Database) *NotificationService {
 func (s *NotificationService) GetUserNotifications(userId int) ([]model.Notification, error) {
 	return s.db.GetNotificationsByUserId(userId)
 }
+
+func (s *NotificationService) GetUserNotificationsWithWebhooks(userId int) ([]model.NotificationWithWebhook, error) {
+	return s.db.GetNotificationsWithWebhooksByUserId(userId)
+}

@@ -38,7 +38,7 @@ func (h *NotificationHandler) GetUserNotifications(w http.ResponseWriter, req *h
 		return
 	}
 
-	notifications, err := h.notificationService.GetUserNotifications(userId)
+	notifications, err := h.notificationService.GetUserNotificationsWithWebhooks(userId)
 	if err != nil {
 		log.Printf("Error fetching notifications: %v", err)
 		apperrors.WriteJSONError(w, http.StatusInternalServerError, err.Error())

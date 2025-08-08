@@ -47,3 +47,69 @@ func (db *Database) GetNotificationsByUserId(userId int) ([]model.Notification, 
 
 	return notifications, nil
 }
+
+func (db *Database) GetNotificationsWithWebhooksByUserId(userId int) ([]model.NotificationWithWebhook, error) {
+	query := `
+		SELECT 
+			n.id,
+    		n.uuid,
+    		n.user_id,
+    		n.webhook_id,
+    		n.title,
+    		n.message,
+    		n.url,
+    		n.is_read,
+    		n.is_deleted,
+    		n.created_at,
+    		n.updated_at,
+    		w.uuid as webhook_uuid,
+    		w.name as webhook_name,
+    		w.slug as webhook_slug
+		FROM notifications n
+		LEFT OUTER JOIN webhooks w
+		ON n.webhook_id = w.id
+		WHERE n.user_id = $1
+		ORDER BY n.created_at DESC
+	`
+	rows, err := db.db.Query(query, userId)
+	if err != nil {
+		log.Printf("Database error fetching notifications for user %d: %v", userId, err)
+		return nil, fmt.Errorf("error fetching notifications")
+	}
+	defer rows.Close()
+
+	var notifications []model.NotificationWithWebhook
+
+	for rows.Next() {
+		var n model.NotificationWithWebhook
+		err := rows.Scan(
+			&n.ID,
+			&n.UUID,
+			&n.UserID,
+			&n.WebhookID,
+			&n.Title,
+			&n.Message,
+			&n.URL,
+			&n.IsRead,
+			&n.IsDeleted,
+			&n.CreatedAt,
+			&n.UpdatedAt,
+			&n.WebhookUUID,
+			&n.WebhookName,
+			&n.WebhookSlug,
+		)
+
+		if err != nil {
+			log.Printf("Error scanning notifications: %v", err)
+			return notifications, fmt.Errorf("error fetching notifications")
+		}
+		notifications = append(notifications, n)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Printf("Error iterating notificaitons: %v", err)
+		return nil, fmt.Errorf("error fetching notifications")
+	}
+
+	return notifications, nil
+}

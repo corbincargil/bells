@@ -8,3 +8,9 @@ export interface Notification {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface NotificationWithWebhook extends Notification {
+  webhookUuid?: string;
+  webhookName?: string;
+  webhookSlug?: string;
+}
