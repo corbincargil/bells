@@ -13,7 +13,7 @@ import {
 const WebhookCard = ({ webhook }: { webhook: Webhook }) => {
   const [isCopied, setIsCopied] = useState(false);
 
-  const copyToClipboard = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const copyToClipboard = () => {
     if (isCopied) return;
     navigator.clipboard.writeText(webhook.slug);
     setIsCopied(true);

@@ -15,7 +15,7 @@ const WebhookList = () => {
     return (
       <div className="flex-1 border border-border rounded-lg p-2 overflow-y-auto space-y-1 sm:space-y-2 text-center">
         <h3 className="mt-2 text-md font-semibold text-foreground">
-          No notifications
+          No webhooks
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">
           Get started by creating your first webhook.

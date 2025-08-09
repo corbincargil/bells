@@ -6,7 +6,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { GlobalErrorFallback } from "@/components/error/global-error-fallback";
 
 const RootLayout = () => {
-  const MAX_WIDTH = "max-w-7xl";
+  const MAX_WIDTH = "max-w-5xl";
   return (
     <>
       <SignedIn>
