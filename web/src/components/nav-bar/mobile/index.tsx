@@ -22,6 +22,7 @@ const MobileNavBar = ({
         container={document.getElementById("root")}
         open={open}
         onOpenChange={setOpen}
+        autoFocus
       >
         <DrawerTrigger className="w-12 h-12 cursor-pointer">
           <Menu

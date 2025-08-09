@@ -11,12 +11,16 @@ const Settings = lazy(() => import("@/pages/(protected)/settings"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 const SignIn = lazy(() => import("@/pages/sign-in"));
 const SignUp = lazy(() => import("@/pages/sign-up"));
+const WebhooksCreate = lazy(
+  () => import("@/pages/(protected)/webhooks/create")
+);
 
 export enum AppRoutes {
   HOME = "/",
   NOTIFICATIONS = "/notifications",
   SETTINGS = "/settings",
   WEBHOOKS = "/webhooks",
+  WEBHOOKS_CREATE = "/webhooks/create",
   SIGN_IN = "/sign-in",
   SIGN_UP = "/sign-up",
   NOT_FOUND = "/404",
@@ -84,7 +88,16 @@ export default function AppRouter() {
               <Webhooks />
             </Suspense>
           }
-        />
+        >
+          <Route
+            path={AppRoutes.WEBHOOKS_CREATE}
+            element={
+              <Suspense fallback={<Loading />}>
+                <WebhooksCreate />
+              </Suspense>
+            }
+          />
+        </Route>
 
         <Route
           path={AppRoutes.NOT_FOUND}
