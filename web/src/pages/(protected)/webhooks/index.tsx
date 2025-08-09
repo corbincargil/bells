@@ -1,17 +1,21 @@
 import WebhookList from "./_components/webhook-list";
+import { ErrorBoundary } from "react-error-boundary";
+import { WebhookListFallback } from "./_components/webhook-list/fallback";
 
 const Webhooks = () => {
   return (
-    <div className="w-full max-w-4xl mx-auto p-6 space-y-8">
-      <div className="border-b border-border pb-6">
-        <h1 className="text-3xl font-bold text-foreground tracking-tight">
+    <div className="h-full flex flex-col">
+      <div className="pb-2 sm:pb-4">
+        <h1 className="text-xl sm:text-2xl font-semibold text-foreground tracking-tight">
           Webhooks
         </h1>
-        <p className="text-muted-foreground mt-2">
-          Manage your webhook integrations
+        <p className="text-sm sm:text-base text-muted-foreground mt-0 sm:mt-2">
+          Manage your webhooks
         </p>
       </div>
-      <WebhookList />
+      <ErrorBoundary fallback={<WebhookListFallback />}>
+        <WebhookList />
+      </ErrorBoundary>
     </div>
   );
 };
