@@ -4,6 +4,7 @@ import PublicLayout from "../layouts/public-layout";
 import RootLayout from "../layouts/root-layout";
 import { WebhookFormLayout } from "@/layouts/webhook-form-layout";
 import Loading from "@/pages/loading";
+import { WebhookFormLoading } from "@/pages/(protected)/webhooks/_components/webhook-form/loading";
 
 const Home = lazy(() => import("@/pages/(protected)/home"));
 const Notifications = lazy(() => import("@/pages/(protected)/notifications"));
@@ -96,7 +97,7 @@ export default function AppRouter() {
             <Route
               index
               element={
-                <Suspense fallback={<Loading />}>
+                <Suspense fallback={<WebhookFormLoading />}>
                   <CreateWebhook />
                 </Suspense>
               }
@@ -106,7 +107,7 @@ export default function AppRouter() {
             <Route
               index
               element={
-                <Suspense fallback={<Loading />}>
+                <Suspense fallback={<WebhookFormLoading />}>
                   <EditWebhook />
                 </Suspense>
               }

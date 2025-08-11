@@ -13,9 +13,10 @@ export const WebhookFormLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const isDrawerActive =
-    location.pathname.includes("/create") ||
-    location.pathname.includes("/edit");
+  const editMode = location.pathname.includes("/edit");
+  const createMode = location.pathname.includes("/create");
+
+  const isDrawerActive = editMode || createMode;
 
   const onOpenChange = (open: boolean) => {
     if (!open) {
@@ -39,9 +40,13 @@ export const WebhookFormLayout = () => {
       autoFocus
     >
       <DrawerContent className="md:!w-[600px] md:!max-w-[600px]">
-        <DrawerTitle className="sr-only">Webhook Form Layout</DrawerTitle>
+        <DrawerTitle className="sr-only">
+          {editMode ? "Edit Webhook" : "Create Webhook"}
+        </DrawerTitle>
         <DrawerDescription className="sr-only">
-          Webhook Form Layout
+          {editMode
+            ? "Edit webhook details"
+            : "Create a new webhook to receive notifications"}
         </DrawerDescription>
         <Outlet />
       </DrawerContent>

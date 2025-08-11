@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router";
 import { WebhookForm } from "../_components/webhook-form";
+import { WebhookFormFallback } from "../_components/webhook-form/fallback";
+import { ErrorBoundary } from "react-error-boundary";
 
 export default function CreateWebhook() {
   const navigate = useNavigate();
@@ -8,5 +10,9 @@ export default function CreateWebhook() {
     navigate("/webhooks");
   };
 
-  return <WebhookForm onCancel={handleClose} />;
+  return (
+    <ErrorBoundary fallback={<WebhookFormFallback />}>
+      <WebhookForm onCancel={handleClose} />
+    </ErrorBoundary>
+  );
 }

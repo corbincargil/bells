@@ -2,7 +2,6 @@ import WebhookList from "./_components/webhook-list";
 import { ErrorBoundary } from "react-error-boundary";
 import { WebhookListFallback } from "./_components/webhook-list/fallback";
 import { CreateWebhookButton } from "./_components/create-webhook-button";
-import { CreateWebhookButtonFallback } from "./_components/create-webhook-button/fallback";
 import { Outlet } from "react-router";
 
 const Webhooks = () => {
@@ -17,9 +16,7 @@ const Webhooks = () => {
             Manage your webhooks
           </p>
         </div>
-        <ErrorBoundary fallback={<CreateWebhookButtonFallback />}>
-          <CreateWebhookButton />
-        </ErrorBoundary>
+        <CreateWebhookButton />
       </div>
       <ErrorBoundary fallback={<WebhookListFallback />}>
         <WebhookList />
