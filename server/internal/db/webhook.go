@@ -50,6 +50,36 @@ func (db *Database) GetWebhooksByUserId(userId int) ([]model.Webhook, error) {
 	return webhooks, nil
 }
 
+func (db *Database) GetWebhookByID(id string) (*model.Webhook, error) {
+	query := `SELECT * FROM webhooks WHERE uuid = $1`
+
+	var w model.Webhook
+	err := db.db.QueryRow(query, id).Scan(
+		&w.ID,
+		&w.UUID,
+		&w.UserID,
+		&w.Name,
+		&w.Description,
+		&w.Slug,
+		&w.NotificationTitle,
+		&w.NotificationMessage,
+		&w.IsActive,
+		&w.LastUsed,
+		&w.CreatedAt,
+		&w.UpdatedAt,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("no webhooks found with id: %s", id)
+		}
+		log.Printf("Database error fetching webhook %s: %v", id, err)
+		return nil, fmt.Errorf("error fetching webhook: %s", id)
+	}
+
+	return &w, err
+}
+
 func (db *Database) CreateWebhook(webhook *model.Webhook) (*model.Webhook, error) {
 	query := `
         INSERT INTO webhooks (

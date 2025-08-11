@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/corbincargil/bells/server/internal/apperrors"
 	"github.com/corbincargil/bells/server/internal/model"
@@ -20,9 +21,22 @@ func NewWebhookHandler(webhookService *service.WebhookService) *WebhookHandler {
 }
 
 func (h *WebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	path := req.URL.Path
+	pathSegments := strings.Split(strings.Trim(path, "/"), "/")
+
 	switch req.Method {
 	case http.MethodGet:
-		h.GetUserWebhooks(w, req)
+		if len(pathSegments) == 3 && pathSegments[2] == "webhooks" {
+			h.GetUserWebhooks(w, req)
+		} else if len(pathSegments) == 4 && pathSegments[2] == "webhooks" {
+			webhookId := pathSegments[3]
+			h.GetWebhookByID(w, req, webhookId)
+		} else {
+			log.Printf("Page not found. Path segments: %v", pathSegments)
+			apperrors.WriteJSONError(w, http.StatusNotFound, "404 page not found")
+			return
+		}
+
 	case http.MethodPost:
 		h.CreateWebhook(w, req)
 	default:
@@ -46,6 +60,49 @@ func (h *WebhookHandler) GetUserWebhooks(w http.ResponseWriter, req *http.Reques
 	}
 
 	json, err := json.Marshal(webhooks)
+	if err != nil {
+		log.Printf("Error marshalling webhook data: %v", err)
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "internal service error")
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(json)
+}
+
+func (h *WebhookHandler) GetWebhookByID(w http.ResponseWriter, req *http.Request, webhookId string) {
+	userId, err := GetUserIDFromContext(req.Context())
+	if err != nil {
+		log.Printf("Could not find user in context: %v", err)
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "internal service error")
+		return
+	}
+
+	if webhookId == "" || len(webhookId) != 36 {
+		log.Printf("Invalid webhook ID: %s", webhookId)
+		apperrors.WriteJSONError(w, http.StatusBadRequest, "invalid webhook ID")
+		return
+	}
+
+	webhook, err := h.webhookService.GetWebhookByID(webhookId)
+	if err != nil {
+		if strings.Contains(err.Error(), "no webhooks found") {
+			apperrors.WriteJSONError(w, http.StatusNotFound, "webhook not found")
+			return
+		} else {
+			log.Printf("Error fetching webhook %s: %v", webhookId, err)
+			apperrors.WriteJSONError(w, http.StatusInternalServerError, "error fetching webhook")
+			return
+		}
+	}
+
+	if webhook.UserID != userId {
+		log.Printf("User %d attempted to fetch webhook %s that does not belong to them", userId, webhookId)
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "error fetching webhook")
+		return
+	}
+
+	json, err := json.Marshal(webhook)
 	if err != nil {
 		log.Printf("Error marshalling webhook data: %v", err)
 		apperrors.WriteJSONError(w, http.StatusInternalServerError, "internal service error")

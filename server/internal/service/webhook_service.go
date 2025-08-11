@@ -20,6 +20,10 @@ func (s *WebhookService) GetUserWebhooks(userId int) ([]model.Webhook, error) {
 	return s.db.GetWebhooksByUserId(userId)
 }
 
+func (s *WebhookService) GetWebhookByID(webhookId string) (*model.Webhook, error) {
+	return s.db.GetWebhookByID(webhookId)
+}
+
 func (s *WebhookService) CreateWebhook(webhook *model.Webhook) (*model.Webhook, error) {
 	return s.db.CreateWebhook(webhook)
 }

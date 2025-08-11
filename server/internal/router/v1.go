@@ -51,6 +51,7 @@ func (v *V1Router) SetupRoutes() {
 
 	//* webhooks
 	http.Handle("/api/v1/webhooks", middleware.WithAuth(v.userService, v.webhookHandler))
+	http.Handle("/api/v1/webhooks/", middleware.WithAuth(v.userService, v.webhookHandler))
 
 	//* push subscriptions
 	http.Handle("/api/v1/subscriptions", middleware.WithAuth(v.userService, v.subscriptionHandler))
