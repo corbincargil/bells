@@ -15,6 +15,7 @@ export const useApiClient = () => {
       },
     });
 
+    // todo: imrpove error handling (add error codes in server)
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.error || `HTTP ${response.status}`);
