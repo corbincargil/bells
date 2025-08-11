@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/corbincargil/bells/server/internal/model"
 )
@@ -80,6 +81,7 @@ func (db *Database) GetWebhookByID(id string) (*model.Webhook, error) {
 	return &w, err
 }
 
+// todo: add description
 func (db *Database) CreateWebhook(webhook *model.Webhook) (*model.Webhook, error) {
 	query := `
         INSERT INTO webhooks (
@@ -91,7 +93,7 @@ func (db *Database) CreateWebhook(webhook *model.Webhook) (*model.Webhook, error
             is_active
         ) 
         VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING id, uuid, user_id, name, slug, notification_title, notification_message, is_active, created_at, updated_at
+        RETURNING *
     `
 
 	var w model.Webhook
@@ -108,16 +110,79 @@ func (db *Database) CreateWebhook(webhook *model.Webhook) (*model.Webhook, error
 		&w.UUID,
 		&w.UserID,
 		&w.Name,
+		&w.Description,
 		&w.Slug,
 		&w.NotificationTitle,
 		&w.NotificationMessage,
 		&w.IsActive,
+		&w.LastUsed,
 		&w.CreatedAt,
 		&w.UpdatedAt,
 	)
 
 	if err != nil {
 		log.Printf("Database error creating webhook: %v", err)
+		if strings.Contains(err.Error(), "idx_webhooks_user_name_unique") {
+			return nil, &model.DuplicateWebhookNameError{
+				WebhookName: webhook.Name,
+			}
+		}
+
+		if strings.Contains(err.Error(), "idx_webhooks_user_slug_unique") {
+			return nil, &model.DuplicateWebhookSlugError{
+				WebhookSlug: webhook.Slug,
+			}
+		}
+
+		return nil, fmt.Errorf("unexpected database error")
+	}
+
+	return &w, err
+}
+
+func (db *Database) UpdateWebhook(webhook *model.Webhook) (*model.Webhook, error) {
+	query := `
+        UPDATE webhooks 
+		SET 
+            name = $1,
+			description = $2,
+            slug = $3,
+            notification_title = $4,
+            notification_message = $5,
+            is_active = $6,
+			updated_at = $7
+        WHERE uuid = $8
+        RETURNING *
+    `
+
+	var w model.Webhook
+	err := db.db.QueryRow(
+		query,
+		webhook.Name,
+		webhook.Description,
+		webhook.Slug,
+		webhook.NotificationTitle,
+		webhook.NotificationMessage,
+		webhook.IsActive,
+		time.Now(),
+		webhook.UUID,
+	).Scan(
+		&w.ID,
+		&w.UUID,
+		&w.UserID,
+		&w.Name,
+		&w.Description,
+		&w.Slug,
+		&w.NotificationTitle,
+		&w.NotificationMessage,
+		&w.IsActive,
+		&w.LastUsed,
+		&w.CreatedAt,
+		&w.UpdatedAt,
+	)
+
+	if err != nil {
+		log.Printf("Database error updating webhook: %v", err)
 		if strings.Contains(err.Error(), "idx_webhooks_user_name_unique") {
 			return nil, &model.DuplicateWebhookNameError{
 				WebhookName: webhook.Name,

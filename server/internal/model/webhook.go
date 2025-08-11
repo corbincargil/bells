@@ -17,10 +17,20 @@ type Webhook struct {
 	IsActive            bool       `db:"is_active"            json:"isActive"`
 	LastUsed            *time.Time `db:"last_used"            json:"lastUsed"`
 	CreatedAt           time.Time  `db:"created_at"           json:"createdAt"`
-	UpdatedAt           time.Time  `db:"updated_at"           json:"updtedAt"`
+	UpdatedAt           time.Time  `db:"updated_at"           json:"updatedAt"`
 }
 
 type CreateWebhookRequest struct {
+	Name                string  `json:"name"`
+	Description         *string `json:"description"`
+	Slug                string  `json:"slug"`
+	NotificationTitle   string  `json:"notificationTitle"`
+	NotificationMessage string  `json:"notificationMessage"`
+	IsActive            *bool   `json:"isActive"`
+}
+
+type UpdateWebhookRequest struct {
+	UUID                string  `json:"uuid"`
 	Name                string  `json:"name"`
 	Description         *string `json:"description"`
 	Slug                string  `json:"slug"`
@@ -37,10 +47,29 @@ func (req *CreateWebhookRequest) Validate() error {
 		return fmt.Errorf("slug is required")
 	}
 	if req.NotificationTitle == "" {
-		return fmt.Errorf("notificationTitle is required")
+		return fmt.Errorf("notification title is required")
 	}
 	if req.NotificationMessage == "" {
-		return fmt.Errorf("notificationMessage is required")
+		return fmt.Errorf("notification message is required")
+	}
+	return nil
+}
+
+func (req *UpdateWebhookRequest) Validate() error {
+	if req.UUID == "" {
+		return fmt.Errorf("uuid is required")
+	}
+	if req.Name == "" {
+		return fmt.Errorf("missing name")
+	}
+	if req.Slug == "" {
+		return fmt.Errorf("missing slug")
+	}
+	if req.NotificationTitle == "" {
+		return fmt.Errorf("missing notification title")
+	}
+	if req.NotificationMessage == "" {
+		return fmt.Errorf("missing notification message")
 	}
 	return nil
 }

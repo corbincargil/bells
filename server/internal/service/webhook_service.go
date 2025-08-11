@@ -28,6 +28,10 @@ func (s *WebhookService) CreateWebhook(webhook *model.Webhook) (*model.Webhook, 
 	return s.db.CreateWebhook(webhook)
 }
 
+func (s *WebhookService) UpdateWebhook(webhook *model.Webhook) (*model.Webhook, error) {
+	return s.db.UpdateWebhook(webhook)
+}
+
 func (s *WebhookService) FindAndVerifyWebhook(userPrefix string, webhookSlug string) (*model.Webhook, error) {
 	// * lookup user
 	userId, err := s.db.GetUserIdByPrefix(userPrefix)
