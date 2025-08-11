@@ -4,6 +4,7 @@ import { RedirectToSignIn, SignedIn, SignedOut } from "@clerk/clerk-react";
 import { AppRoutes } from "@/router";
 import { ErrorBoundary } from "react-error-boundary";
 import { GlobalErrorFallback } from "@/components/error/global-error-fallback";
+import { Toaster } from "@/components/ui/sonner";
 
 const RootLayout = () => {
   const MAX_WIDTH = "max-w-5xl";
@@ -27,6 +28,7 @@ const RootLayout = () => {
               <Outlet />
             </ErrorBoundary>
           </main>
+          <Toaster expand richColors position="top-right" />
 
           <footer className="bg-background border-t border-border">
             <div
