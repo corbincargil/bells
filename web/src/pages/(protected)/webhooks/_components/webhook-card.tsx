@@ -49,26 +49,27 @@ const WebhookCard = ({ webhook }: { webhook: Webhook }) => {
           </div>
         </div>
       </div>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="ml-2 p-2 hover:text-secondary"
-        onClick={copyToClipboard}
-        disabled={!webhook.slug}
-      >
-        <Tooltip>
-          <TooltipTrigger asChild>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="ml-2 p-2 hover:text-secondary"
+            onClick={copyToClipboard}
+            disabled={!webhook.slug}
+          >
             {isCopied ? (
               <Check className="w-5 h-5" />
             ) : (
               <Copy className="w-5 h-5" />
             )}
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{isCopied ? "Copied!" : "Copy to clipboard"}</p>
-          </TooltipContent>
-        </Tooltip>
-      </Button>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{isCopied ? "Copied!" : "Copy to clipboard"}</p>
+        </TooltipContent>
+      </Tooltip>
     </div>
   );
 };

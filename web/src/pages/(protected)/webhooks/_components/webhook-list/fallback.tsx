@@ -10,11 +10,7 @@ export const WebhookListFallback = () => {
       <p className="text-sm text-muted-foreground text-center">
         An error occurred while loading your webhooks 😢
       </p>
-      <Button
-        onClick={() => navigate(AppRoutes.HOME)}
-        variant="primary"
-        className="mt-4"
-      >
+      <Button onClick={() => navigate(AppRoutes.HOME)} className="mt-4">
         Go Home
       </Button>
     </div>

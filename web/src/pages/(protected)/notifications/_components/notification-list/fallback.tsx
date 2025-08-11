@@ -10,11 +10,7 @@ export const NotificationListFallback = () => {
       <p className="text-sm text-muted-foreground text-center">
         An error occurred while loading your notifications 😢
       </p>
-      <Button
-        onClick={() => navigate(AppRoutes.HOME)}
-        variant="primary"
-        className="mt-4"
-      >
+      <Button onClick={() => navigate(AppRoutes.HOME)} className="mt-4">
         Go Home
       </Button>
     </div>
