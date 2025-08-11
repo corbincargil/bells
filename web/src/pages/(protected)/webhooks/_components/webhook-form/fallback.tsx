@@ -2,13 +2,17 @@ import { Button } from "@/components/ui/button";
 import { AppRoutes } from "@/router";
 import { useNavigate } from "react-router";
 
-export const WebhookFormFallback = () => {
+interface WebhookFormFallbackProps {
+  mode: "create" | "edit";
+}
+
+export const WebhookFormFallback = ({ mode }: WebhookFormFallbackProps) => {
   const navigate = useNavigate();
   return (
     <div className="h-full max-h-[90vh] flex flex-col bg-background">
       <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
         <h2 className="text-lg font-semibold text-foreground">
-          Webhook Form Error
+          {mode === "create" ? "Create Webhook" : "Edit Webhook"}
         </h2>
       </div>
 

@@ -1,8 +1,14 @@
-export const WebhookFormLoading = () => {
+interface WebhookFormLoadingProps {
+  mode: "create" | "edit";
+}
+
+export const WebhookFormLoading = ({ mode }: WebhookFormLoadingProps) => {
   return (
     <div className="h-full max-h-[90vh] flex flex-col bg-background">
       <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
-        <div className="h-6 w-32 bg-muted rounded animate-pulse" />
+        <h2 className="text-foreground font-semibold text-lg">
+          {mode === "create" ? "Create Webhook" : "Edit Webhook"}
+        </h2>
       </div>
 
       <div className="flex-1 p-4 sm:p-6">

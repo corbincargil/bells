@@ -11,7 +11,7 @@ export default function CreateWebhook() {
   };
 
   return (
-    <ErrorBoundary fallback={<WebhookFormFallback />}>
+    <ErrorBoundary fallback={<WebhookFormFallback mode="create" />}>
       <WebhookForm onCancel={handleClose} />
     </ErrorBoundary>
   );

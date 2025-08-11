@@ -97,7 +97,7 @@ export default function AppRouter() {
             <Route
               index
               element={
-                <Suspense fallback={<WebhookFormLoading />}>
+                <Suspense fallback={<WebhookFormLoading mode="create" />}>
                   <CreateWebhook />
                 </Suspense>
               }
@@ -107,7 +107,7 @@ export default function AppRouter() {
             <Route
               index
               element={
-                <Suspense fallback={<WebhookFormLoading />}>
+                <Suspense fallback={<WebhookFormLoading mode="edit" />}>
                   <EditWebhook />
                 </Suspense>
               }
