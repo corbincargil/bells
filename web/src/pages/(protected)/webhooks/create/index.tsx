@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router";
 import { WebhookForm } from "../_components/webhook-form";
 
-export default function WebhooksCreate() {
+export default function CreateWebhook() {
   const navigate = useNavigate();
 
   const handleClose = () => {

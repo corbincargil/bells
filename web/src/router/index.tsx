@@ -1,7 +1,8 @@
 import { Routes, Route } from "react-router";
 import { Suspense, lazy } from "react";
-import RootLayout from "../layouts/root-layout";
 import PublicLayout from "../layouts/public-layout";
+import RootLayout from "../layouts/root-layout";
+import { WebhookFormLayout } from "@/layouts/webhook-form-layout";
 import Loading from "@/pages/loading";
 
 const Home = lazy(() => import("@/pages/(protected)/home"));
@@ -11,8 +12,9 @@ const Settings = lazy(() => import("@/pages/(protected)/settings"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 const SignIn = lazy(() => import("@/pages/sign-in"));
 const SignUp = lazy(() => import("@/pages/sign-up"));
-const WebhooksCreate = lazy(
-  () => import("@/pages/(protected)/webhooks/create")
+const CreateWebhook = lazy(() => import("@/pages/(protected)/webhooks/create"));
+const EditWebhook = lazy(
+  () => import("@/pages/(protected)/webhooks/edit/[id]")
 );
 
 export enum AppRoutes {
@@ -20,7 +22,8 @@ export enum AppRoutes {
   NOTIFICATIONS = "/notifications",
   SETTINGS = "/settings",
   WEBHOOKS = "/webhooks",
-  WEBHOOKS_CREATE = "/webhooks/create",
+  CREATE = "create",
+  EDIT = "edit/:id",
   SIGN_IN = "/sign-in",
   SIGN_UP = "/sign-up",
   NOT_FOUND = "/404",
@@ -89,14 +92,26 @@ export default function AppRouter() {
             </Suspense>
           }
         >
-          <Route
-            path={AppRoutes.WEBHOOKS_CREATE}
-            element={
-              <Suspense fallback={<Loading />}>
-                <WebhooksCreate />
-              </Suspense>
-            }
-          />
+          <Route path={AppRoutes.CREATE} element={<WebhookFormLayout />}>
+            <Route
+              index
+              element={
+                <Suspense fallback={<Loading />}>
+                  <CreateWebhook />
+                </Suspense>
+              }
+            />
+          </Route>
+          <Route path={AppRoutes.EDIT} element={<WebhookFormLayout />}>
+            <Route
+              index
+              element={
+                <Suspense fallback={<Loading />}>
+                  <EditWebhook />
+                </Suspense>
+              }
+            />
+          </Route>
         </Route>
 
         <Route

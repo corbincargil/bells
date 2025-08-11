@@ -9,9 +9,15 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useNavigate } from "react-router";
 
 const WebhookCard = ({ webhook }: { webhook: Webhook }) => {
   const [isCopied, setIsCopied] = useState(false);
+  const navigate = useNavigate();
+
+  const onCardClick = () => {
+    navigate(`/webhooks/edit/${webhook.uuid}`);
+  };
 
   const copyToClipboard = () => {
     if (isCopied) return;
@@ -23,7 +29,10 @@ const WebhookCard = ({ webhook }: { webhook: Webhook }) => {
   };
 
   return (
-    <div className="group w-full flex items-center gap-3 bg-card border border-border cursor-pointer rounded-lg p-4 hover:bg-accent/50 hover:shadow-sm transition-all duration-200">
+    <div
+      className="group w-full flex items-center gap-3 bg-card border border-border cursor-pointer rounded-lg p-4 hover:bg-accent/50 hover:shadow-sm transition-all duration-200"
+      onClick={onCardClick}
+    >
       <div className="flex flex-col w-full gap-1 sm:gap-2">
         <h3 className="text-sm font-semibold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
           {webhook.name}
