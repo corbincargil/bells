@@ -5,6 +5,7 @@ export const useApiClient = () => {
 
   const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
     const token = await getToken();
+
     const response = await fetch(`/api/v1${endpoint}`, {
       ...options,
       headers: {
@@ -13,6 +14,12 @@ export const useApiClient = () => {
         ...options.headers,
       },
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `HTTP ${response.status}`);
+    }
+
     return response.json();
   };
 

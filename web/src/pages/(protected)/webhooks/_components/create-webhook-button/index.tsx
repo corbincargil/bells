@@ -52,7 +52,7 @@ export const CreateWebhookButton = () => {
           </div>
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="!w-[600px] !max-w-[600px]">
+      <DrawerContent className="md:!w-[600px] md:!max-w-[600px]">
         <DrawerTitle className="sr-only">Create Webhook</DrawerTitle>
         <DrawerDescription className="sr-only">
           Create a new webhook to receive notifications

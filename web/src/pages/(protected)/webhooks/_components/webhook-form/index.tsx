@@ -1,15 +1,65 @@
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import type { Webhook } from "@/types/webhook";
-import { useState } from "react";
+import type { CreateWebhook, Webhook } from "@/types/webhook";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createWebhookSchema } from "@/types/webhook";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { Textarea } from "@/components/ui/textarea";
+import { useCreateWebhook } from "@/lib/api/webhooks";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface WebhookFormProps {
   webhook?: Webhook;
   onCancel: () => void;
 }
 
+const defaultValues: CreateWebhook = {
+  name: "",
+  slug: "",
+  notificationTitle: "",
+  notificationMessage: "",
+  isActive: true,
+  description: "",
+};
+
 export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
-  const [isActive, setIsActive] = useState(true);
+  const createWebhook = useCreateWebhook();
+  const form = useForm<CreateWebhook>({
+    resolver: zodResolver(createWebhookSchema),
+    defaultValues,
+  });
+
+  const queryClient = useQueryClient();
+  const { mutate: createWebhookMutation, isPending } = useMutation({
+    mutationFn: createWebhook,
+  });
+
+  const onSubmit = async (data: CreateWebhook) => {
+    createWebhookMutation(data, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["webhooks"] });
+        toast.success("Webhook created successfully", {});
+        onCancel();
+        form.reset();
+      },
+      onError: (e) => {
+        console.error(e);
+        toast.error(`Failed to create webhook: ${e.message}`, {});
+      },
+    });
+  };
+
   return (
     <div className="h-full max-h-[90vh] flex flex-col bg-background">
       <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
@@ -19,79 +69,126 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
       </div>
 
       <div className="flex-1 p-4 sm:p-6">
-        <div className="space-y-4 sm:space-y-6">
-          <div className="flex items-start gap-8">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Name
-              </label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
-                placeholder="My webhook"
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 sm:space-y-6"
+          >
+            <div className="flex items-start gap-8">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel className="text-foreground">Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="My webhook" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="isActive"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-foreground">Active?</FormLabel>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className="cursor-pointer"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
               />
             </div>
-            <div className="flex flex-col gap-2">
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Active?
-              </label>
-              <Switch checked={isActive} onCheckedChange={setIsActive} />
+
+            <FormField
+              control={form.control}
+              name="slug"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-foreground">URL Slug</FormLabel>
+                  <FormControl>
+                    <Input placeholder="my-webhook" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="notificationTitle"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-foreground">
+                    Notification Title
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="Title" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="notificationMessage"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-foreground">
+                    Notification Message
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="Message" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-foreground">
+                    Description
+                    <span className="text-muted-foreground">(optional)</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Description"
+                      {...field}
+                      className="max-h-[400px]"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex gap-3 pt-4">
+              <Button type="submit" className="flex-1" disabled={isPending}>
+                {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                {webhook ? "Update Webhook" : "Create Webhook"}
+              </Button>
+              <Button
+                type="button"
+                className="text-muted-foreground"
+                variant="outline"
+                onClick={onCancel}
+              >
+                Cancel
+              </Button>
             </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              URL Slug
-            </label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
-              placeholder="my-webhook"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Notification Title
-            </label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
-              placeholder="Title"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Notification Message
-            </label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
-              placeholder="Message"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Description
-            </label>
-            <textarea
-              className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors resize-none"
-              rows={3}
-              placeholder="Optional description"
-            />
-          </div>
-
-          <div className="flex gap-3 pt-4">
-            <Button type="button" className="flex-1">
-              {webhook ? "Update Webhook" : "Create Webhook"}
-            </Button>
-            <Button type="button" variant="outline" onClick={onCancel}>
-              Cancel
-            </Button>
-          </div>
-        </div>
+          </form>
+        </Form>
       </div>
     </div>
   );
