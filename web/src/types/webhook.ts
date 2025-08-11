@@ -22,4 +22,15 @@ export const createWebhookSchema = z.object({
   isActive: z.boolean(),
 });
 
+export const updateWebhookSchema = z.object({
+  uuid: z.uuid(),
+  name: z.string().min(1),
+  description: z.string().optional(),
+  slug: z.string().min(1),
+  notificationTitle: z.string().min(1),
+  notificationMessage: z.string().min(1),
+  isActive: z.boolean(),
+});
+
 export type CreateWebhook = z.infer<typeof createWebhookSchema>;
+export type UpdateWebhook = z.infer<typeof updateWebhookSchema>;

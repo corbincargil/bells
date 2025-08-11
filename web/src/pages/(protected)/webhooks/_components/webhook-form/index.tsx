@@ -1,7 +1,7 @@
 import { Switch } from "@/components/ui/switch";
-import type { CreateWebhook, Webhook } from "@/types/webhook";
+import type { CreateWebhook, UpdateWebhook, Webhook } from "@/types/webhook";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createWebhookSchema } from "@/types/webhook";
+import { createWebhookSchema, updateWebhookSchema } from "@/types/webhook";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,8 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
-import { useCreateWebhook } from "@/lib/api/webhooks";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCreateWebhook, useUpdateWebhook } from "@/lib/api/webhooks";
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -34,37 +34,62 @@ const defaultValues: CreateWebhook = {
 };
 
 export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
-  const createWebhook = useCreateWebhook();
-  const form = useForm<CreateWebhook>({
-    resolver: zodResolver(createWebhookSchema),
-    defaultValues,
+  const formSchema = webhook ? updateWebhookSchema : createWebhookSchema;
+  const initialValues = webhook
+    ? { ...webhook, description: webhook.description ?? "" }
+    : defaultValues;
+
+  const form = useForm<CreateWebhook | UpdateWebhook>({
+    resolver: zodResolver(formSchema),
+    defaultValues: initialValues,
   });
 
   const queryClient = useQueryClient();
-  const { mutate: createWebhookMutation, isPending } = useMutation({
-    mutationFn: createWebhook,
-  });
+  const { mutate: createWebhookMutation, isPending: isCreating } =
+    useCreateWebhook();
+  const { mutate: updateWebhookMutation, isPending: isUpdating } =
+    useUpdateWebhook();
 
-  const onSubmit = async (data: CreateWebhook) => {
-    createWebhookMutation(data, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["webhooks"] });
-        toast.success("Webhook created successfully", {});
-        onCancel();
-        form.reset();
-      },
-      onError: (e) => {
-        console.error(e);
-        toast.error(`Failed to create webhook: ${e.message}`, {});
-      },
-    });
+  const onSubmit = async (data: CreateWebhook | UpdateWebhook) => {
+    if (webhook) {
+      updateWebhookMutation(data as UpdateWebhook, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: ["webhooks"],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["webhook", webhook.uuid],
+          });
+          toast.success("Webhook updated successfully", {});
+        },
+        onError: (e) => {
+          console.error(e);
+          toast.error(`Failed to update webhook: ${e.message}`);
+        },
+      });
+    } else {
+      createWebhookMutation(data as CreateWebhook, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["webhooks"] });
+          toast.success("Webhook created successfully");
+          onCancel();
+          form.reset();
+        },
+        onError: (e) => {
+          console.error(e);
+          toast.error(`Failed to create webhook: ${e.message}`);
+        },
+      });
+    }
   };
+
+  const isPending = isCreating || isUpdating;
 
   return (
     <div className="h-full max-h-[90vh] flex flex-col bg-background">
       <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
         <h2 className="text-lg font-semibold text-foreground">
-          Create Webhook
+          {webhook ? "Update Webhook" : "Create Webhook"}
         </h2>
       </div>
 
@@ -164,8 +189,9 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
                   <FormControl>
                     <Textarea
                       placeholder="Description"
-                      {...field}
                       className="max-h-[400px]"
+                      {...field}
+                      value={field.value ?? ""}
                     />
                   </FormControl>
                   <FormMessage />
@@ -183,6 +209,7 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
                 className="text-muted-foreground"
                 variant="outline"
                 onClick={onCancel}
+                disabled={isPending}
               >
                 Cancel
               </Button>
