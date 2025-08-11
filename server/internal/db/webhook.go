@@ -10,7 +10,7 @@ import (
 )
 
 func (db *Database) GetWebhooksByUserId(userId int) ([]model.Webhook, error) {
-	rows, err := db.db.Query("SELECT * FROM webhooks WHERE user_id = $1", userId)
+	rows, err := db.db.Query("SELECT * FROM webhooks WHERE user_id = $1 ORDER BY created_at DESC", userId)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("no webhooks found for user: %d", userId)
@@ -74,7 +74,9 @@ func (db *Database) CreateWebhook(webhook *model.Webhook) (*model.Webhook, error
 		webhook.NotificationMessage,
 		webhook.IsActive,
 	).Scan(
+		&w.ID,
 		&w.UUID,
+		&w.UserID,
 		&w.Name,
 		&w.Slug,
 		&w.NotificationTitle,
