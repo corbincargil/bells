@@ -40,6 +40,15 @@ func (h *WebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		h.CreateWebhook(w, req)
 	case http.MethodPut:
 		h.UpdateWebhook(w, req)
+	case http.MethodDelete:
+		if len(pathSegments) == 4 && pathSegments[2] == "webhooks" {
+			webhookId := pathSegments[3]
+			h.DeleteWebhookByID(w, req, webhookId)
+		} else {
+			log.Printf("Page not found. Path segments: %v", pathSegments)
+			apperrors.WriteJSONError(w, http.StatusNotFound, "404 page not found")
+			return
+		}
 	default:
 		apperrors.WriteJSONError(w, http.StatusMethodNotAllowed, "Method not allowed")
 	}
@@ -250,4 +259,53 @@ func (h *WebhookHandler) UpdateWebhook(w http.ResponseWriter, req *http.Request)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(updatedWebhook)
+}
+
+func (h *WebhookHandler) DeleteWebhookByID(w http.ResponseWriter, req *http.Request, webhookId string) {
+	userId, err := GetUserIDFromContext(req.Context())
+	if err != nil {
+		log.Printf("Could not find user in context: %v", err)
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "internal service error")
+		return
+	}
+
+	if webhookId == "" || len(webhookId) != 36 {
+		log.Printf("Invalid webhook ID: %s", webhookId)
+		apperrors.WriteJSONError(w, http.StatusBadRequest, "invalid webhook ID")
+		return
+	}
+
+	webhook, err := h.webhookService.GetWebhookByID(webhookId)
+	if err != nil {
+		if strings.Contains(err.Error(), "no webhooks found") {
+			apperrors.WriteJSONError(w, http.StatusNotFound, "webhook not found")
+			return
+		} else {
+			log.Printf("Error fetching webhook %s: %v", webhookId, err)
+			apperrors.WriteJSONError(w, http.StatusInternalServerError, "error deleting webhook")
+			return
+		}
+	}
+
+	if webhook.UserID != userId {
+		log.Printf("User %d attempted to delete webhook %s that does not belong to them", userId, webhookId)
+		apperrors.WriteJSONError(w, http.StatusNotFound, "webhook not found")
+		return
+	}
+
+	err = h.webhookService.DeleteWebhook(webhookId)
+	if err != nil {
+		if strings.Contains(err.Error(), "no webhooks found") {
+			apperrors.WriteJSONError(w, http.StatusNotFound, "webhook not found")
+			return
+		} else {
+			log.Printf("Error deleting webhook %s: %v", webhookId, err)
+			apperrors.WriteJSONError(w, http.StatusInternalServerError, "error fetching webhook")
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 }

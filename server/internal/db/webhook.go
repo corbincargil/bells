@@ -78,7 +78,7 @@ func (db *Database) GetWebhookByID(id string) (*model.Webhook, error) {
 		return nil, fmt.Errorf("error fetching webhook: %s", id)
 	}
 
-	return &w, err
+	return &w, nil
 }
 
 // todo: add description
@@ -137,7 +137,7 @@ func (db *Database) CreateWebhook(webhook *model.Webhook) (*model.Webhook, error
 		return nil, fmt.Errorf("unexpected database error")
 	}
 
-	return &w, err
+	return &w, nil
 }
 
 func (db *Database) UpdateWebhook(webhook *model.Webhook) (*model.Webhook, error) {
@@ -198,5 +198,22 @@ func (db *Database) UpdateWebhook(webhook *model.Webhook) (*model.Webhook, error
 		return nil, fmt.Errorf("unexpected database error")
 	}
 
-	return &w, err
+	return &w, nil
+}
+
+func (db *Database) DeleteWebhookByID(id string) error {
+	query := `DELETE FROM webhooks WHERE uuid = $1`
+
+	result, err := db.db.Exec(query, id)
+	if err != nil {
+		log.Printf("Error deleting webhook %s: %v", id, err)
+		return fmt.Errorf("error deleting webhook: %s", id)
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		return fmt.Errorf("no webhooks found with id: %s", id)
+	}
+
+	return nil
 }

@@ -45,3 +45,12 @@ export const useUpdateWebhook = () => {
     },
   });
 };
+
+export const useDeleteWebhook = () => {
+  const { apiRequest } = useApiClient();
+
+  return useMutation({
+    mutationFn: (id: string) =>
+      apiRequest(`/webhooks/${id}`, { method: "DELETE" }),
+  });
+};

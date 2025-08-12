@@ -14,10 +14,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
-import { useCreateWebhook, useUpdateWebhook } from "@/lib/api/webhooks";
+import {
+  useCreateWebhook,
+  useDeleteWebhook,
+  useUpdateWebhook,
+} from "@/lib/api/webhooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { DeleteWebhookButton } from "../delete-webhook-button";
 
 interface WebhookFormProps {
   webhook?: Webhook;
@@ -45,10 +50,15 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
   });
 
   const queryClient = useQueryClient();
+
   const { mutate: createWebhookMutation, isPending: isCreating } =
     useCreateWebhook();
+
   const { mutate: updateWebhookMutation, isPending: isUpdating } =
     useUpdateWebhook();
+
+  const { mutate: deleteWebhookMutation, isPending: isDeleting } =
+    useDeleteWebhook();
 
   const onSubmit = async (data: CreateWebhook | UpdateWebhook) => {
     if (webhook) {
@@ -83,7 +93,23 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
     }
   };
 
-  const isPending = isCreating || isUpdating;
+  const onDelete = async () => {
+    if (!webhook) return;
+
+    deleteWebhookMutation(webhook.uuid, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["webhooks"] });
+        toast.success("Webhook deleted successfully");
+        onCancel();
+      },
+      onError: (e) => {
+        queryClient.invalidateQueries({ queryKey: ["webhooks"] });
+        toast.error(`Failed to delete webhook: ${e.message}`);
+      },
+    });
+  };
+
+  const isPending = isCreating || isUpdating || isDeleting;
 
   return (
     <div className="h-full max-h-[90vh] flex flex-col bg-background">
@@ -200,6 +226,12 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
             />
 
             <div className="flex gap-3 pt-4">
+              {webhook && (
+                <DeleteWebhookButton
+                  onDelete={onDelete}
+                  isPending={isPending}
+                />
+              )}
               <Button type="submit" className="flex-1" disabled={isPending}>
                 {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
                 {webhook ? "Update Webhook" : "Create Webhook"}
