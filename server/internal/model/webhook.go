@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// todo: add url (should i use url or slug? Keep both? Or just one of them?)
 type Webhook struct {
 	ID                  int        `db:"id"                   json:"-"`
 	UUID                string     `db:"uuid"                 json:"uuid"`
