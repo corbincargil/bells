@@ -5,9 +5,16 @@ import { AppRoutes } from "@/router";
 import { ErrorBoundary } from "react-error-boundary";
 import { GlobalErrorFallback } from "@/components/error/global-error-fallback";
 import { Toaster } from "@/components/ui/sonner";
+import { useEffect } from "react";
+import registerServiceWorker from "@/lib/register-sw";
 
 const RootLayout = () => {
   const MAX_WIDTH = "max-w-5xl";
+
+  useEffect(() => {
+    registerServiceWorker();
+  }, []);
+
   return (
     <>
       <SignedIn>
