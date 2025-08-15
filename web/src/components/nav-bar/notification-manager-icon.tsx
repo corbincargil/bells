@@ -63,14 +63,18 @@ export const NotificationManagerIcon = () => {
         <DropdownMenuLabel>
           Notifications: {permission === "granted" ? "Enabled" : "Disabled"}
         </DropdownMenuLabel>
+        <DropdownMenuSeparator />
         <p className="px-2 py-1.5 text-sm text-muted-foreground">
           {permission === "granted"
             ? "You are subscribed to notifications"
-            : "Retry to enable notifications"}
+            : "You are not subscribed to notifications"}
         </p>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onRetry} disabled={permission === "granted"}>
-          {hasRequestedPermission() ? "Retry" : "Enable"}
+          Subscribe
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={onRetry} disabled={permission !== "granted"}>
+          Unsubscribe
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
