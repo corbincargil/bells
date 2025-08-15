@@ -25,3 +25,18 @@ export const useCreateSubscription = () => {
       }),
   });
 };
+
+export const getCurrentSubscription = async () => {
+  if (!("serviceWorker" in navigator)) {
+    return null;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+    return subscription;
+  } catch (error) {
+    console.error("Error getting current subscription:", error);
+    return null;
+  }
+};
