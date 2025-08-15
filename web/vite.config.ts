@@ -21,6 +21,11 @@ export default defineConfig(({ mode }) => {
           target: env.VITE_API_URL || "http://localhost:8090",
           changeOrigin: true,
         },
+        //todo: remove this after testing
+        "/b4SRZGqP": {
+          target: env.VITE_API_URL || "http://localhost:8090",
+          changeOrigin: true,
+        },
       },
     },
   };

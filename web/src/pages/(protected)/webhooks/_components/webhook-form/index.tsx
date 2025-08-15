@@ -93,6 +93,17 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
     }
   };
 
+  const onTest = async () => {
+    if (!webhook) {
+      toast.error("Webhook not found");
+      return;
+    }
+
+    fetch(`/b4SRZGqP/webhook/${webhook.slug}`, {
+      method: "POST",
+    });
+  };
+
   const onDelete = async () => {
     if (!webhook) return;
 
@@ -236,6 +247,16 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
                 {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
                 {webhook ? "Update Webhook" : "Create Webhook"}
               </Button>
+              {webhook && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={onTest}
+                  disabled={isPending}
+                >
+                  Test
+                </Button>
+              )}
               <Button
                 type="button"
                 className="text-muted-foreground"

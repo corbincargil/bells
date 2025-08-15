@@ -4,9 +4,11 @@ self.addEventListener("push", (e) => {
     console.log("Notification permission not granted");
     return;
   }
+
+  const data = e.data.json();
   const options = {
-    body: e.data.text(),
+    body: data.message,
     icon: "/logo.png",
   };
-  e.waitUntil(self.registration.showNotification("Hello from Bells", options));
+  e.waitUntil(self.registration.showNotification(data.title, options));
 });
