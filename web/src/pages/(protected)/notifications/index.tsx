@@ -1,6 +1,7 @@
 import NotificationList from "@/pages/(protected)/notifications/_components/notification-list";
 import { ErrorBoundary } from "react-error-boundary";
 import { NotificationListFallback } from "./_components/notification-list/fallback";
+import { NotificationStatusBanner } from "@/components/banners/notification-status-banner";
 
 const Notifications = () => {
   return (
@@ -13,6 +14,7 @@ const Notifications = () => {
           Stay updated with your latest activity
         </p>
       </div>
+      <NotificationStatusBanner />
       <ErrorBoundary fallback={<NotificationListFallback />}>
         <NotificationList />
       </ErrorBoundary>

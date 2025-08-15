@@ -7,6 +7,7 @@ import { GlobalErrorFallback } from "@/components/error/global-error-fallback";
 import { Toaster } from "@/components/ui/sonner";
 import { useEffect } from "react";
 import registerServiceWorker from "@/lib/register-sw";
+import { PushNotificationProvider } from "@/contexts/push-notification-context";
 
 const RootLayout = () => {
   const MAX_WIDTH = "max-w-5xl";
@@ -18,37 +19,39 @@ const RootLayout = () => {
   return (
     <>
       <SignedIn>
-        <div className="h-screen text-foreground bg-background flex flex-col">
-          <header className="bg-background shadow-sm border-b border-border">
-            <div className={`${MAX_WIDTH} mx-auto px-4 sm:px-6 lg:px-8`}>
-              <div className="flex justify-between items-center h-16">
-                <h1 className="text-3xl font-bold text-foreground">Bells</h1>
-                <NavBar />
+        <PushNotificationProvider>
+          <div className="h-screen text-foreground bg-background flex flex-col">
+            <header className="bg-background shadow-sm border-b border-border">
+              <div className={`${MAX_WIDTH} mx-auto px-4 sm:px-6 lg:px-8`}>
+                <div className="flex justify-between items-center h-16">
+                  <h1 className="text-3xl font-bold text-foreground">Bells</h1>
+                  <NavBar />
+                </div>
               </div>
-            </div>
-          </header>
+            </header>
 
-          <main
-            className={`flex-1 ${MAX_WIDTH} w-full mx-auto px-4 sm:px-6 lg:px-8 py-1 sm:py-8 overflow-hidden`}
-          >
-            <ErrorBoundary fallback={<GlobalErrorFallback />}>
-              <Outlet />
-            </ErrorBoundary>
-          </main>
-          <Toaster expand richColors position="top-right" />
-
-          <footer className="bg-background border-t border-border">
-            <div
-              className={`${MAX_WIDTH} mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-4`}
+            <main
+              className={`flex-1 ${MAX_WIDTH} w-full mx-auto px-4 sm:px-6 lg:px-8 py-1 sm:py-8 overflow-hidden`}
             >
-              <p className="text-center text-foreground text-sm">
-                <a href="https://github.com/corbincargil/bells">
-                  &copy; 2025 Bells App
-                </a>
-              </p>
-            </div>
-          </footer>
-        </div>
+              <ErrorBoundary fallback={<GlobalErrorFallback />}>
+                <Outlet />
+              </ErrorBoundary>
+            </main>
+            <Toaster expand richColors position="top-right" />
+
+            <footer className="bg-background border-t border-border">
+              <div
+                className={`${MAX_WIDTH} mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-4`}
+              >
+                <p className="text-center text-foreground text-sm">
+                  <a href="https://github.com/corbincargil/bells">
+                    &copy; 2025 Bells App
+                  </a>
+                </p>
+              </div>
+            </footer>
+          </div>
+        </PushNotificationProvider>
       </SignedIn>
       <SignedOut>
         <RedirectToSignIn redirectUrl={AppRoutes.SIGN_IN} />

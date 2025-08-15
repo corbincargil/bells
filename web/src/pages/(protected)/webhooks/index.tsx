@@ -3,6 +3,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { WebhookListFallback } from "./_components/webhook-list/fallback";
 import { CreateWebhookButton } from "./_components/create-webhook-button";
 import { Outlet } from "react-router";
+import { NotificationStatusBanner } from "@/components/banners/notification-status-banner";
 
 const Webhooks = () => {
   return (
@@ -18,6 +19,7 @@ const Webhooks = () => {
         </div>
         <CreateWebhookButton />
       </div>
+      <NotificationStatusBanner />
       <ErrorBoundary fallback={<WebhookListFallback />}>
         <WebhookList />
       </ErrorBoundary>
