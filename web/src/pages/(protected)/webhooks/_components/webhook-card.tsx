@@ -19,7 +19,8 @@ const WebhookCard = ({ webhook }: { webhook: Webhook }) => {
     navigate(`/webhooks/edit/${webhook.uuid}`);
   };
 
-  const copyToClipboard = () => {
+  const copyToClipboard = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     if (isCopied) return;
     navigator.clipboard.writeText(webhook.slug);
     setIsCopied(true);

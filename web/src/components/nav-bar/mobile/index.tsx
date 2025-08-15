@@ -24,11 +24,8 @@ const MobileNavBar = ({
         onOpenChange={setOpen}
         autoFocus
       >
-        <DrawerTrigger className="w-12 h-12 cursor-pointer">
-          <Menu
-            size={32}
-            className="mx-auto h-full hover:text-primary transition-all"
-          />
+        <DrawerTrigger className="w-12 h-12 cursor-pointer rounded-lg hover:text-primary dark:hover:bg-accent/50 transition-all">
+          <Menu size={32} className="mx-auto h-full" />
         </DrawerTrigger>
         <DrawerContent>
           <DialogTitle className="sr-only">Mobile nav bar</DialogTitle>
