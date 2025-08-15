@@ -113,3 +113,50 @@ func (db *Database) GetNotificationsWithWebhooksByUserId(userId int) ([]model.No
 
 	return notifications, nil
 }
+
+func (db *Database) CreateNotification(notification *model.Notification) (*model.Notification, error) {
+	query := `
+        INSERT INTO notifications (
+            user_id,
+            title,
+            message
+		)
+        VALUES ($1, $2, $3)
+        RETURNING 
+			id,
+			uuid,
+			user_id,
+			title,
+			message,
+			is_read,
+			is_deleted,
+			created_at,
+			updated_at
+    `
+
+	var n model.Notification
+	err := db.db.QueryRow(
+		query,
+		notification.UserID,
+		notification.Title,
+		notification.Message,
+	).Scan(
+		&n.ID,
+		&n.UUID,
+		&n.UserID,
+		&n.Title,
+		&n.Message,
+		&n.IsRead,
+		&n.IsDeleted,
+		&n.CreatedAt,
+		&n.UpdatedAt,
+	)
+
+	if err != nil {
+		log.Printf("Database error creating notification: %v", err)
+
+		return nil, fmt.Errorf("unexpected database error")
+	}
+
+	return &n, nil
+}

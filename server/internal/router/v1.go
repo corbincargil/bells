@@ -28,7 +28,7 @@ func NewV1Router(db *database.Database, n *service.NotificationService, w *servi
 		db:                   db,
 		userService:          service.NewUserService(db),
 		publicHealthHandler:  handler.NewPublicHealthHandler(db),
-		publicWebhookHandler: handler.NewPublicWebhookHandler(w),
+		publicWebhookHandler: handler.NewPublicWebhookHandler(w, n, s),
 		notificationHandler:  handler.NewNotificationHandler(n),
 		webhookHandler:       handler.NewWebhookHandler(w),
 		subscriptionHandler:  handler.NewSubscriptionHandler(s),
