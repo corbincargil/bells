@@ -1,3 +1,7 @@
+import { useCreateSubscription } from "@/lib/api/subscriptions";
+import getDeviceInfo from "@/lib/get-device-info";
+import type { SubscriptionRequestBody } from "@/types/subscription";
+import { useQueryClient } from "@tanstack/react-query";
 import { useReducer } from "react";
 import { toast } from "sonner";
 
@@ -45,6 +49,8 @@ const pushNotificationReducer = (
 
 const usePushNotifications = () => {
   const [state, dispatch] = useReducer(pushNotificationReducer, initialState);
+  const { mutate: createSubscription } = useCreateSubscription();
+  const queryClient = useQueryClient();
 
   const subscribe = async () => {
     dispatch({ type: "START_LOADING" });
@@ -54,8 +60,27 @@ const usePushNotifications = () => {
         userVisibleOnly: true,
         applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
       });
-      console.log("SUBSCRIPTION: ", sub);
-      console.log("SUBSCRIPTION json: ", sub.toJSON());
+
+      const deviceInfo = getDeviceInfo();
+      const subscriptionRequestBody: SubscriptionRequestBody = {
+        subscription: sub.toJSON(),
+        device: deviceInfo,
+      };
+
+      createSubscription(subscriptionRequestBody, {
+        onSuccess: () => {
+          dispatch({ type: "SET_SUBSCRIPTION", payload: sub });
+          queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+        },
+        onError: (error) => {
+          console.error(error);
+          dispatch({
+            type: "SET_ERROR",
+            payload: error.message,
+          });
+        },
+      });
+
       dispatch({ type: "SET_SUBSCRIPTION", payload: sub });
     } catch (error) {
       console.error(error);
@@ -102,37 +127,24 @@ const usePushNotifications = () => {
     localStorage.removeItem("push-notification-asked");
   };
 
-  const requestPermission = () => {
+  const requestPermission = async () => {
     if (checkPermission() !== "granted" && !hasRequestedPermission()) {
-      toast.info("Enable notifications?", {
-        action: {
-          label: "Enable",
-          onClick: async () => {
-            const permission = await Notification.requestPermission();
-            dispatch({ type: "SET_PERMISSION", payload: permission });
-            localStorage.setItem("push-notification-asked", "true");
-            if (permission === "granted") {
-              subscribe();
-              toast.success("Notifications enabled");
-            } else {
-              toast.error(
-                "Please enable notifications in your browser settings",
-                {
-                  description: "Settings > Site Settings > Notifications",
-                }
-              );
-            }
-          },
-        },
-        duration: 10000,
-        closeButton: true,
-      });
+      const permission = await Notification.requestPermission();
+      dispatch({ type: "SET_PERMISSION", payload: permission });
+      localStorage.setItem("push-notification-asked", "true");
+      if (permission === "granted") {
+        subscribe();
+        toast.success("Notifications enabled");
+      } else {
+        toast.error("Please enable notifications in your browser settings", {
+          description: "Settings > Site Settings > Notifications",
+        });
+      }
     }
   };
 
   return {
     ...state,
-    subscribe,
     unsubscribe,
     checkPermission,
     requestPermission,

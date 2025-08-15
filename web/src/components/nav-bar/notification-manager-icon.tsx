@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 export const NotificationManagerIcon = () => {
   const {
@@ -26,9 +27,18 @@ export const NotificationManagerIcon = () => {
 
   useEffect(() => {
     if (permission !== "granted" && !hasRequestedPermission()) {
-      requestPermission();
+      setTimeout(() => {
+        toast.info("Enable notifications?", {
+          action: {
+            label: "Enable",
+            onClick: requestPermission,
+          },
+          duration: 10000,
+          closeButton: true,
+        });
+      }, 5000);
     }
-  }, [permission, hasRequestedPermission]);
+  }, [permission, hasRequestedPermission, requestPermission]);
 
   const root = document.getElementById("root");
   return (
@@ -60,7 +70,7 @@ export const NotificationManagerIcon = () => {
         </p>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onRetry} disabled={permission === "granted"}>
-          Retry
+          {hasRequestedPermission() ? "Retry" : "Enable"}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
