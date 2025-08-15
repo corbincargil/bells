@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useReducer } from "react";
 import { toast } from "sonner";
 
 interface PushNotificationState {
@@ -52,8 +52,10 @@ const usePushNotifications = () => {
       const registration = await navigator.serviceWorker.ready;
       const sub = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: import.meta.env.VAPID_PUBLIC_KEY,
+        applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
       });
+      console.log("SUBSCRIPTION: ", sub);
+      console.log("SUBSCRIPTION json: ", sub.toJSON());
       dispatch({ type: "SET_SUBSCRIPTION", payload: sub });
     } catch (error) {
       console.error(error);
@@ -110,6 +112,7 @@ const usePushNotifications = () => {
             dispatch({ type: "SET_PERMISSION", payload: permission });
             localStorage.setItem("push-notification-asked", "true");
             if (permission === "granted") {
+              subscribe();
               toast.success("Notifications enabled");
             } else {
               toast.error(
