@@ -8,7 +8,21 @@ import (
 )
 
 func (db *Database) GetSubscriptionsByUserId(userId int) ([]model.PushSubscription, error) {
-	rows, err := db.db.Query("SELECT * FROM push_subscriptions WHERE user_id = $1", userId)
+	rows, err := db.db.Query(`
+	SELECT
+		uuid,
+		is_active,
+		endpoint,
+		p256dh_key,
+		auth_key,
+		device_name,
+		browser,
+		platform,
+		last_used,
+		created_at,
+		updated_at
+	FROM push_subscriptions 
+	WHERE user_id = $1`, userId)
 	if err != nil {
 		log.Printf("Database error fetching subscriptions for user %d: %v", userId, err)
 		return nil, fmt.Errorf("error fetching subscriptions")
@@ -20,10 +34,15 @@ func (db *Database) GetSubscriptionsByUserId(userId int) ([]model.PushSubscripti
 	for rows.Next() {
 		var s model.PushSubscription
 		err := rows.Scan(
-			&s.ID,
 			&s.UUID,
-			&s.UserID,
 			&s.IsActive,
+			&s.Endpoint,
+			&s.AuthKey,
+			&s.P256dhKey,
+			&s.DeviceName,
+			&s.Browser,
+			&s.Platform,
+			&s.LastUsed,
 			&s.CreatedAt,
 			&s.UpdatedAt,
 		)
@@ -43,24 +62,54 @@ func (db *Database) GetSubscriptionsByUserId(userId int) ([]model.PushSubscripti
 	return subscriptions, nil
 }
 
-func (db *Database) CreatePushSubscription(webhook *model.PushSubscription) (*model.PushSubscription, error) {
+func (db *Database) CreatePushSubscription(s *model.PushSubscription) (*model.PushSubscription, error) {
 	query := `
         INSERT INTO push_subscriptions (
             user_id,
-            is_active
+            is_active,
+			endpoint,
+			auth_key,
+			p256dh_key,
+			device_name,
+			browser,
+			platform
         ) 
-        VALUES ($1, $2)
-        RETURNING uuid, is_active, created_at, updated_at
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		RETURNING 
+			uuid,
+			is_active,
+			endpoint,
+			p256dh_key,
+			auth_key,
+			device_name,
+			browser,
+			platform,
+			last_used,
+			created_at,
+			updated_at;
     `
 
 	var subscription model.PushSubscription
 	err := db.db.QueryRow(
 		query,
-		webhook.UserID,
-		webhook.IsActive,
+		s.UserID,
+		s.IsActive,
+		s.Endpoint,
+		s.AuthKey,
+		s.P256dhKey,
+		s.DeviceName,
+		s.Browser,
+		s.Platform,
 	).Scan(
 		&subscription.UUID,
 		&subscription.IsActive,
+		&subscription.Endpoint,
+		&subscription.AuthKey,
+		&subscription.P256dhKey,
+		&subscription.DeviceName,
+		&subscription.Browser,
+		&subscription.Platform,
+		&subscription.LastUsed,
 		&subscription.CreatedAt,
 		&subscription.UpdatedAt,
 	)

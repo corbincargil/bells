@@ -55,4 +55,5 @@ func (v *V1Router) SetupRoutes() {
 
 	//* push subscriptions
 	http.Handle("/api/v1/subscriptions", middleware.WithAuth(v.userService, v.subscriptionHandler))
+	http.Handle("/api/v1/subscriptions/", middleware.WithAuth(v.userService, v.subscriptionHandler))
 }

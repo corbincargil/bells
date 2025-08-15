@@ -26,6 +26,7 @@ func (h *WebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	switch req.Method {
 	case http.MethodGet:
+		// todo: cleanup magic numbers and add comments
 		if len(pathSegments) == 3 && pathSegments[2] == "webhooks" {
 			h.GetUserWebhooks(w, req)
 		} else if len(pathSegments) == 4 && pathSegments[2] == "webhooks" {
@@ -33,7 +34,7 @@ func (h *WebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			h.GetWebhookByID(w, req, webhookId)
 		} else {
 			log.Printf("Page not found. Path segments: %v", pathSegments)
-			apperrors.WriteJSONError(w, http.StatusNotFound, "404 page not found")
+			apperrors.WriteJSONError(w, http.StatusNotFound, "page not found")
 			return
 		}
 	case http.MethodPost:
@@ -46,7 +47,7 @@ func (h *WebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			h.DeleteWebhookByID(w, req, webhookId)
 		} else {
 			log.Printf("Page not found. Path segments: %v", pathSegments)
-			apperrors.WriteJSONError(w, http.StatusNotFound, "404 page not found")
+			apperrors.WriteJSONError(w, http.StatusNotFound, "page not found")
 			return
 		}
 	default:

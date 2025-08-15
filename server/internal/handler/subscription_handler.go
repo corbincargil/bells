@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/corbincargil/bells/server/internal/apperrors"
 	"github.com/corbincargil/bells/server/internal/model"
@@ -20,11 +21,20 @@ func NewSubscriptionHandler(subscriptionService *service.SubscriptionService) *S
 }
 
 func (h *SubscriptionHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	path := req.URL.Path
+	pathSegments := strings.Split(strings.Trim(path, "/"), "/")
+
 	switch req.Method {
 	case http.MethodGet:
 		h.GetUserSubscriptions(w, req)
 	case http.MethodPost:
-		h.CreateSubscription(w, req)
+		if len(pathSegments) == 4 && pathSegments[2] == "subscriptions" && pathSegments[3] == "subscribe" {
+			h.HandleNewSubscription(w, req)
+		} else {
+			log.Printf("Page not found. Path segments: %v", pathSegments)
+			apperrors.WriteJSONError(w, http.StatusNotFound, "page not found")
+			return
+		}
 	default:
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
@@ -56,8 +66,8 @@ func (h *SubscriptionHandler) GetUserSubscriptions(w http.ResponseWriter, req *h
 	w.Write(json)
 }
 
-func (h *SubscriptionHandler) CreateSubscription(w http.ResponseWriter, req *http.Request) {
-	var requestBody model.CreateSubscriptionRequest
+func (h *SubscriptionHandler) HandleNewSubscription(w http.ResponseWriter, req *http.Request) {
+	var requestBody model.SubscribeRequest
 
 	err := json.NewDecoder(req.Body).Decode(&requestBody)
 	if err != nil {
@@ -73,17 +83,18 @@ func (h *SubscriptionHandler) CreateSubscription(w http.ResponseWriter, req *htt
 		return
 	}
 
-	isActive := true
-	if requestBody.IsActive != nil {
-		isActive = *requestBody.IsActive
+	subsciptionParams := model.PushSubscription{
+		UserID:     userId,
+		IsActive:   true,
+		Endpoint:   requestBody.Subscription.Endpoint,
+		AuthKey:    requestBody.Subscription.Keys.Auth,
+		P256dhKey:  requestBody.Subscription.Keys.P256dh,
+		DeviceName: requestBody.Device.Name,
+		Browser:    requestBody.Device.Browser,
+		Platform:   requestBody.Device.Platform,
 	}
 
-	webhookParams := model.PushSubscription{
-		UserID:   userId,
-		IsActive: isActive,
-	}
-
-	webhook, err := h.subscriptionService.CreateSubscription(&webhookParams)
+	sub, err := h.subscriptionService.CreateSubscription(&subsciptionParams)
 	if err != nil {
 		log.Printf("Error creating subscription: %v", err)
 		apperrors.WriteJSONError(w, http.StatusInternalServerError, err.Error())
@@ -92,5 +103,5 @@ func (h *SubscriptionHandler) CreateSubscription(w http.ResponseWriter, req *htt
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(webhook)
+	json.NewEncoder(w).Encode(sub)
 }
