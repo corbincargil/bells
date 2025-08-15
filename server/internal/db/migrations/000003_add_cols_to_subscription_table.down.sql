@@ -1,0 +1,9 @@
+ALTER TABLE push_subscriptions 
+DROP COLUMN IF EXISTS endpoint,
+DROP COLUMN IF EXISTS p256dh_key,
+DROP COLUMN IF EXISTS auth_key,
+DROP COLUMN IF EXISTS device_name,
+DROP COLUMN IF EXISTS browser,
+DROP COLUMN IF EXISTS platform,
+DROP COLUMN IF EXISTS last_used
+;
