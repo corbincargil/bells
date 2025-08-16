@@ -1,0 +1,22 @@
+{
+  "name": "Honk",
+  "short_name": "Honk",
+  "description": "A web application for centralizing your notifications",
+  "icons": [
+    {
+      "src": "/honk-favicon/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/honk-favicon/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "theme_color": "#e17373",
+  "background_color": "#e17373",
+  "display": "standalone"
+}

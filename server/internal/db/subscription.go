@@ -22,7 +22,8 @@ func (db *Database) GetSubscriptionsByUserId(userId int) ([]model.PushSubscripti
 		created_at,
 		updated_at
 	FROM push_subscriptions 
-	WHERE user_id = $1`, userId)
+	WHERE user_id = $1
+	ORDER BY created_at DESC`, userId)
 	if err != nil {
 		log.Printf("Database error fetching subscriptions for user %d: %v", userId, err)
 		return nil, fmt.Errorf("error fetching subscriptions")

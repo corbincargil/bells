@@ -8,7 +8,8 @@ self.addEventListener("push", (e) => {
   const data = e.data.json();
   const options = {
     body: data.message,
-    icon: "/logo.png",
+    icon: "/honk-favicon/favicon-96x96.png",
+    badge: "/honk-favicon/favicon-96x96.png",
   };
   e.waitUntil(self.registration.showNotification(data.title, options));
 });
