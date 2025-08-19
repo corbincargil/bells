@@ -236,36 +236,38 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
               )}
             />
 
-            <div className="flex gap-3 pt-4">
-              {webhook && (
-                <DeleteWebhookButton
-                  onDelete={onDelete}
-                  isPending={isPending}
-                />
-              )}
-              <Button type="submit" className="flex-1" disabled={isPending}>
-                {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                {webhook ? "Update Webhook" : "Create Webhook"}
-              </Button>
-              {webhook && (
+            <div className="bg-muted/10 p-4 sm:p-6 border-t border-border">
+              <div className="flex gap-3">
+                {webhook && (
+                  <DeleteWebhookButton
+                    onDelete={onDelete}
+                    isPending={isPending}
+                  />
+                )}
+                <Button type="submit" className="flex-1" disabled={isPending}>
+                  {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {webhook ? "Update Webhook" : "Create Webhook"}
+                </Button>
+                {webhook && (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={onTest}
+                    disabled={isPending || !webhook.isActive}
+                  >
+                    Test
+                  </Button>
+                )}
                 <Button
                   type="button"
-                  variant="secondary"
-                  onClick={onTest}
-                  disabled={isPending || !webhook.isActive}
+                  className="text-muted-foreground"
+                  variant="outline"
+                  onClick={onCancel}
+                  disabled={isPending}
                 >
-                  Test
+                  Cancel
                 </Button>
-              )}
-              <Button
-                type="button"
-                className="text-muted-foreground"
-                variant="outline"
-                onClick={onCancel}
-                disabled={isPending}
-              >
-                Cancel
-              </Button>
+              </div>
             </div>
           </form>
         </Form>

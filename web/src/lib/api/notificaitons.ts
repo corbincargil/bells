@@ -11,6 +11,15 @@ export const useNotifications = () => {
   });
 };
 
+export const useNotification = (id: string) => {
+  const { apiRequest } = useApiClient();
+
+  return useQuery<NotificationWithWebhook>({
+    queryKey: ["notification", id],
+    queryFn: () => apiRequest(`/notifications/${id}`),
+  });
+};
+
 export const useDeleteNotification = () => {
   const { apiRequest } = useApiClient();
 

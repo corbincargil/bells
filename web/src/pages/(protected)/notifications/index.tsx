@@ -2,6 +2,7 @@ import NotificationList from "@/pages/(protected)/notifications/_components/noti
 import { ErrorBoundary } from "react-error-boundary";
 import { NotificationListFallback } from "./_components/notification-list/fallback";
 import { NotificationStatusBanner } from "@/components/banners/notification-status-banner";
+import { Outlet } from "react-router";
 
 const Notifications = () => {
   return (
@@ -18,6 +19,7 @@ const Notifications = () => {
       <ErrorBoundary fallback={<NotificationListFallback />}>
         <NotificationList />
       </ErrorBoundary>
+      <Outlet />
     </div>
   );
 };

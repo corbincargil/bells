@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 
@@ -112,6 +113,58 @@ func (db *Database) GetNotificationsWithWebhooksByUserId(userId int) ([]model.No
 	}
 
 	return notifications, nil
+}
+
+func (db *Database) GetNotificationWithWebhookByUUID(uuid string) (*model.NotificationWithWebhook, error) {
+	query := `
+		SELECT 
+			n.id,
+    		n.uuid,
+    		n.user_id,
+    		n.webhook_id,
+    		n.title,
+    		n.message,
+    		n.url,
+    		n.is_read,
+    		n.is_deleted,
+    		n.created_at,
+    		n.updated_at,
+    		w.uuid as webhook_uuid,
+    		w.name as webhook_name,
+    		w.slug as webhook_slug
+		FROM notifications n
+		LEFT OUTER JOIN webhooks w
+		ON n.webhook_id = w.id
+		WHERE n.uuid = $1
+	`
+
+	var n model.NotificationWithWebhook
+	err := db.db.QueryRow(query, uuid).Scan(
+		&n.ID,
+		&n.UUID,
+		&n.UserID,
+		&n.WebhookID,
+		&n.Title,
+		&n.Message,
+		&n.URL,
+		&n.IsRead,
+		&n.IsDeleted,
+		&n.CreatedAt,
+		&n.UpdatedAt,
+		&n.WebhookUUID,
+		&n.WebhookName,
+		&n.WebhookSlug,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			log.Printf("Notification not found %s", uuid)
+			return nil, fmt.Errorf("notification not found: %s", uuid)
+		}
+		log.Printf("Database error fetching notification %s: %v", uuid, err)
+		return nil, fmt.Errorf("error fetching notification: %s", uuid)
+	}
+
+	return &n, nil
 }
 
 func (db *Database) CreateNotification(notification *model.Notification) (*model.Notification, error) {

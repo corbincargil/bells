@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -25,7 +26,12 @@ func (h *NotificationHandler) ServeHTTP(w http.ResponseWriter, req *http.Request
 
 	switch req.Method {
 	case http.MethodGet:
-		h.GetUserNotifications(w, req)
+		if len(pathSegments) == 3 && pathSegments[2] == "notifications" {
+			h.GetUserNotifications(w, req)
+		} else if len(pathSegments) == 4 && pathSegments[2] == "notifications" {
+			notificationUuid := pathSegments[3]
+			h.GetNotificationByID(w, req, notificationUuid)
+		}
 	case http.MethodDelete:
 		if len(pathSegments) == 4 && pathSegments[2] == "notifications" {
 			notificationUuid := pathSegments[3]
@@ -56,6 +62,41 @@ func (h *NotificationHandler) GetUserNotifications(w http.ResponseWriter, req *h
 	if err != nil {
 		log.Printf("Error marshalling notifications: %v", err)
 		apperrors.WriteJSONError(w, http.StatusInternalServerError, "error fetching notificaitons")
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(json)
+}
+
+func (h *NotificationHandler) GetNotificationByID(w http.ResponseWriter, req *http.Request, notificationUuid string) {
+	userId, err := GetUserIDFromContext(req.Context())
+	if err != nil {
+		log.Printf("Could not find user %s in context: %v", userId, err)
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "internal service error")
+		return
+	}
+
+	if notificationUuid == "" || len(notificationUuid) != 36 {
+		log.Printf("Invalid webhook UUID: %s", notificationUuid)
+		errString := fmt.Sprintf("invalid webhook ID: %s", notificationUuid)
+		apperrors.WriteJSONError(w, http.StatusBadRequest, errString)
+		return
+	}
+
+	notification, err := h.notificationService.GetNotificationWithWebhook(notificationUuid)
+	if err != nil {
+		if strings.Contains(err.Error(), "notification not found") {
+			apperrors.WriteJSONError(w, http.StatusNotFound, err.Error())
+		}
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	json, err := json.Marshal(notification)
+	if err != nil {
+		log.Printf("Error marshalling notification: %v", err)
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "error fetching notificaiton")
 		return
 	}
 

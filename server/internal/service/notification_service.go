@@ -25,6 +25,10 @@ func (s *NotificationService) GetUserNotificationsWithWebhooks(userId int) ([]mo
 	return s.db.GetNotificationsWithWebhooksByUserId(userId)
 }
 
+func (s *NotificationService) GetNotificationWithWebhook(uuid string) (*model.NotificationWithWebhook, error) {
+	return s.db.GetNotificationWithWebhookByUUID(uuid)
+}
+
 func (s *NotificationService) CreateNotification(notification *model.Notification) (*model.Notification, error) {
 	return s.db.CreateNotification(notification)
 }
@@ -42,6 +46,7 @@ func (s *NotificationService) SendPushNotification(newNotification *model.Notifi
 	payload := fmt.Appendf(nil, `{"title":"%s","message":"%s"}`, newNotification.Title, newNotification.Message)
 
 	resp, err := webpush.SendNotification(payload, sub, &webpush.Options{
+		//todo remove email address
 		Subscriber:      "corbin.carigl@gmail.com",
 		VAPIDPublicKey:  os.Getenv("VAPID_PUBLIC_KEY"),
 		VAPIDPrivateKey: os.Getenv("VAPID_PRIVATE_KEY"),

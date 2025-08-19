@@ -1,6 +1,6 @@
 import type { NotificationWithWebhook } from "@/types/notification";
 import { DeleteNotificationButton } from "./notification-list/delete-notification-button";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import dateFormatters from "@/lib/date-formatters";
 
 const NotificationCard = ({
@@ -12,10 +12,21 @@ const NotificationCard = ({
   onDelete: () => void;
   isPending: boolean;
 }) => {
+  const [searchParams] = useSearchParams();
+
+  const route = () => {
+    const base = `/notifications/details/${notification.uuid}`;
+    const tab = searchParams.get("tab");
+    if (tab && tab !== "primary") {
+      return `${base}?tab=${tab}`;
+    }
+    return base;
+  };
+
   return (
     <Link
       className="group w-full flex items-start gap-3 bg-card border border-border cursor-pointer rounded-lg p-4 hover:bg-accent/50 hover:shadow-sm transition-all duration-200"
-      to={`/notifications/details/${notification.uuid}`}
+      to={route()}
     >
       {!notification.isRead ? (
         <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />

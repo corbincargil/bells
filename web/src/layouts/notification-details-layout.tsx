@@ -4,23 +4,33 @@ import {
   DrawerDescription,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { Outlet, useLocation, useNavigate } from "react-router";
+import {
+  Outlet,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router";
 import { useEffect, useState } from "react";
+import { AppRoutes } from "@/router";
+import { buildUrlWithCurrentParams } from "@/lib/navigation";
 
-export const WebhookFormLayout = () => {
+export const NotificationDetailsLayout = () => {
   const [isMobile, setIsMobile] = useState(false);
-
+  const [searchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const editMode = location.pathname.includes("/edit");
-  const createMode = location.pathname.includes("/create");
+  const detailsMode = location.pathname.includes("/details");
 
-  const isDrawerActive = editMode || createMode;
+  const isDrawerActive = detailsMode;
 
   const onOpenChange = (open: boolean) => {
     if (!open) {
-      navigate("/webhooks");
+      const url = buildUrlWithCurrentParams(
+        AppRoutes.NOTIFICATIONS,
+        searchParams
+      );
+      navigate(url);
     }
   };
 
@@ -41,13 +51,9 @@ export const WebhookFormLayout = () => {
       handleOnly={!isMobile}
     >
       <DrawerContent className="md:!w-[600px] md:!max-w-[600px]">
-        <DrawerTitle className="sr-only">
-          {editMode ? "Edit Webhook" : "Create Webhook"}
-        </DrawerTitle>
+        <DrawerTitle className="sr-only">Notification Details</DrawerTitle>
         <DrawerDescription className="sr-only">
-          {editMode
-            ? "Edit webhook details"
-            : "Create a new webhook to receive notifications"}
+          View notification details
         </DrawerDescription>
         <Outlet />
       </DrawerContent>

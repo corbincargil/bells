@@ -3,8 +3,10 @@ import { Suspense, lazy } from "react";
 import PublicLayout from "../layouts/public-layout";
 import RootLayout from "../layouts/root-layout";
 import { WebhookFormLayout } from "@/layouts/webhook-form-layout";
-import Loading from "@/pages/loading";
 import { WebhookFormLoading } from "@/pages/(protected)/webhooks/_components/webhook-form/loading";
+import { NotificationDetailsLayout } from "@/layouts/notification-details-layout";
+import { NotificationDetailsLoading } from "@/pages/(protected)/notifications/_components/notification-details/loading";
+import Loading from "@/pages/loading";
 
 const Home = lazy(() => import("@/pages/(protected)/home"));
 const Notifications = lazy(() => import("@/pages/(protected)/notifications"));
@@ -17,6 +19,9 @@ const CreateWebhook = lazy(() => import("@/pages/(protected)/webhooks/create"));
 const EditWebhook = lazy(
   () => import("@/pages/(protected)/webhooks/edit/[id]")
 );
+const NotificationDetails = lazy(
+  () => import("@/pages/(protected)/notifications/details/[id]")
+);
 
 export enum AppRoutes {
   HOME = "/",
@@ -25,6 +30,7 @@ export enum AppRoutes {
   WEBHOOKS = "/webhooks",
   CREATE = "create",
   EDIT = "edit/:id",
+  DETAILS = "details/:id",
   SIGN_IN = "/sign-in",
   SIGN_UP = "/sign-up",
   NOT_FOUND = "/404",
@@ -74,7 +80,21 @@ export default function AppRouter() {
               <Notifications />
             </Suspense>
           }
-        />
+        >
+          <Route
+            path={AppRoutes.DETAILS}
+            element={<NotificationDetailsLayout />}
+          >
+            <Route
+              index
+              element={
+                <Suspense fallback={<NotificationDetailsLoading />}>
+                  <NotificationDetails />
+                </Suspense>
+              }
+            />
+          </Route>
+        </Route>
 
         <Route
           path={AppRoutes.SETTINGS}
