@@ -37,8 +37,12 @@ func (s *NotificationService) UpdateNotificationReadStatus(uuid string, readStat
 	return s.db.UpdateNotificationReadStatus(uuid, readStatus)
 }
 
-func (s *NotificationService) SoftDeleteNotification(uuid string) error {
-	return s.db.SoftDeleteNotification(uuid)
+func (s *NotificationService) UpdateNotificationArchiveStatus(uuid string, archiveStatus bool) error {
+	return s.db.UpdateNotificationArchiveStatus(uuid, archiveStatus)
+}
+
+func (s *NotificationService) DeleteNotificationByUUID(uuid string) error {
+	return s.db.DeleteNotificationByUUID(uuid)
 }
 
 func (s *NotificationService) SendPushNotification(newNotification *model.Notification, subscription *model.WebPushSubscription) error {

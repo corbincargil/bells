@@ -3,17 +3,16 @@ import { Link } from "react-router";
 import type { NotificationWithWebhook } from "@/types/notification";
 import dateFormatters from "@/lib/date-formatters";
 import { Button } from "@/components/ui/button";
-import {
-  Trash2,
-  Mail,
-  Calendar,
-  Clock,
-  MailOpen,
-  LinkIcon,
-} from "lucide-react";
+import { Mail, Calendar, Clock, MailOpen, LinkIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { usePatchReadStatus } from "@/lib/api/notificaitons";
+import {
+  useDeleteNotification,
+  usePatchArchiveStatus,
+  usePatchReadStatus,
+} from "@/lib/api/notificaitons";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { DeleteNotificationButton } from "../notification-list/delete-notification-button";
 
 interface NotificationDetailsProps {
   notification: NotificationWithWebhook;
@@ -26,6 +25,9 @@ export const NotificationDetails = ({
 }: NotificationDetailsProps) => {
   const queryClient = useQueryClient();
   const { mutate: patchReadStatus } = usePatchReadStatus();
+  const { mutate: patchArchiveStatus } = usePatchArchiveStatus();
+  const { mutate: deleteNotification, isPending: isDeleting } =
+    useDeleteNotification();
 
   const handleMarkAsRead = () => {
     if (notification.isRead) return;
@@ -35,6 +37,7 @@ export const NotificationDetails = ({
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["notifications"] });
           notification.isRead = true;
+          notification.updatedAt = new Date().toISOString();
         },
       }
     );
@@ -48,14 +51,57 @@ export const NotificationDetails = ({
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["notifications"] });
           notification.isRead = false;
+          notification.updatedAt = new Date().toISOString();
+        },
+      }
+    );
+  };
+
+  const handleArchive = () => {
+    patchArchiveStatus(
+      { notificationId: notification.uuid, isArchived: true },
+      {
+        onSuccess: () => {
+          toast.success("Notification archived successfully");
+          queryClient.invalidateQueries({ queryKey: ["notifications"] });
+          notification.isArchived = true;
+          notification.updatedAt = new Date().toISOString();
+        },
+        onError: (e) => {
+          toast.error(`Failed to archive notification: ${e.message}`);
+        },
+      }
+    );
+  };
+
+  const handleUnarchive = () => {
+    patchArchiveStatus(
+      { notificationId: notification.uuid, isArchived: false },
+      {
+        onSuccess: () => {
+          toast.success("Notification unarchived successfully");
+          queryClient.invalidateQueries({ queryKey: ["notifications"] });
+          notification.isArchived = false;
+          notification.updatedAt = new Date().toISOString();
+        },
+        onError: (e) => {
+          toast.error(`Failed to unarchive notification: ${e.message}`);
         },
       }
     );
   };
 
   const handleDelete = () => {
-    // TODO: Implement delete functionality
-    console.log("Delete notification:", notification.uuid);
+    deleteNotification(notification.uuid, {
+      onSuccess: () => {
+        toast.success("Notification deleted successfully");
+        queryClient.invalidateQueries({ queryKey: ["notifications"] });
+        onClose();
+      },
+      onError: (e) => {
+        toast.error(`Failed to delete notification: ${e.message}`);
+      },
+    });
   };
 
   useEffect(() => {
@@ -133,7 +179,7 @@ export const NotificationDetails = ({
               </label>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Calendar className="w-4 h-4" />
-                {dateFormatters.fullDateTime(notification.createdAt)}
+                {dateFormatters.relativeTime(notification.createdAt)}
               </div>
             </div>
             <div>
@@ -142,7 +188,7 @@ export const NotificationDetails = ({
               </label>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Clock className="w-4 h-4" />
-                {dateFormatters.fullDateTime(notification.updatedAt)}
+                {dateFormatters.relativeTime(notification.updatedAt)}
               </div>
             </div>
           </div>
@@ -152,14 +198,33 @@ export const NotificationDetails = ({
       {/* Actions Section */}
       <div className="bg-muted/10 p-4 sm:p-6 border-t border-border">
         <div className="flex gap-3 justify-between">
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={handleDelete}
-            className="flex items-center gap-2"
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
+          <div className="flex gap-3">
+            <DeleteNotificationButton
+              onDelete={handleDelete}
+              isPending={isDeleting}
+            />
+            {notification.isArchived ? (
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleUnarchive}
+                disabled={!notification.isArchived}
+                className="flex items-center gap-2"
+              >
+                Restore
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleArchive}
+                disabled={notification.isArchived}
+                className="flex items-center gap-2"
+              >
+                Archive
+              </Button>
+            )}
+          </div>
           <div className="flex gap-3">
             {notification.isRead ? (
               <Button

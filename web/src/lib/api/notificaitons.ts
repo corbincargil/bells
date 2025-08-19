@@ -37,6 +37,23 @@ export const usePatchReadStatus = () => {
   });
 };
 
+export const usePatchArchiveStatus = () => {
+  const { apiRequest } = useApiClient();
+
+  return useMutation({
+    mutationFn: ({
+      notificationId,
+      isArchived,
+    }: {
+      notificationId: string;
+      isArchived: boolean;
+    }) =>
+      apiRequest(`/notifications/${notificationId}/?archived=${isArchived}`, {
+        method: "PATCH",
+      }),
+  });
+};
+
 export const useDeleteNotification = () => {
   const { apiRequest } = useApiClient();
 

@@ -1,8 +1,19 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 
 interface DeleteNotificationButtonProps {
-  onDelete: (e: React.MouseEvent) => void;
+  onDelete: () => void;
   isPending: boolean;
 }
 
@@ -10,17 +21,42 @@ export const DeleteNotificationButton = ({
   onDelete,
   isPending,
 }: DeleteNotificationButtonProps) => {
+  const root = document.getElementById("root");
   return (
-    <Button
-      variant="ghost"
-      type="button"
-      disabled={isPending}
-      onClick={(e) => {
-        e.preventDefault();
-        onDelete(e);
-      }}
-    >
-      <X className="w-4 h-4" />
-    </Button>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="destructive" type="button" disabled={isPending}>
+          <Trash2 className="w-4 h-4" />
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent container={root ?? undefined}>
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-foreground">
+            Delete Notification
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            Are you sure you want to delete this notification? This action
+            cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel
+            className="text-foreground"
+            type="button"
+            disabled={isPending}
+          >
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction
+            type="button"
+            onClick={onDelete}
+            disabled={isPending}
+          >
+            {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+            Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };

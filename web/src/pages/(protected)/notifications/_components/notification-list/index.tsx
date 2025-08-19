@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  useDeleteNotification,
   useNotifications,
+  usePatchArchiveStatus,
 } from "@/lib/api/notificaitons";
 import NotificationCard from "../notification-card";
 import { NotificationListLoading } from "./loading";
@@ -10,30 +10,36 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useSearchParams } from "react-router";
 
-//todo: add "archived" tab and db action
-const tabs = ["primary", "unread", "read", "deleted"] as const;
+const tabs = ["primary", "unread", "read", "archived"] as const;
 
 const NotificationList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const queryClient = useQueryClient();
+
   const tab = (searchParams.get("tab") ?? "primary") as (typeof tabs)[number];
 
   const { data: notifications, isLoading, error } = useNotifications();
-  const { mutate: deleteNotification, isPending } = useDeleteNotification();
-  const queryClient = useQueryClient();
+  const { mutate: archiveNotification, isPending } = usePatchArchiveStatus();
 
-  const onDelete = (notificationId: string) => {
+  const onArchive = (notificationId: string) => {
     if (!notificationId) return;
 
-    deleteNotification(notificationId, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["notifications"] });
-        toast.success("Notification deleted successfully");
+    archiveNotification(
+      {
+        notificationId,
+        isArchived: true,
       },
-      onError: (e) => {
-        queryClient.invalidateQueries({ queryKey: ["notifications"] });
-        toast.error(`Failed to delete notification: ${e.message}`);
-      },
-    });
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["notifications"] });
+          toast.success("Notification archived successfully");
+        },
+        onError: (e) => {
+          queryClient.invalidateQueries({ queryKey: ["notifications"] });
+          toast.error(`Failed to archive notification: ${e.message}`);
+        },
+      }
+    );
   };
 
   if (isLoading) return <NotificationListLoading />;
@@ -74,10 +80,10 @@ const NotificationList = () => {
           Read
         </TabsTrigger>
         <TabsTrigger
-          value="deleted"
-          onClick={() => setSearchParams({ tab: "deleted" })}
+          value="archived"
+          onClick={() => setSearchParams({ tab: "archived" })}
         >
-          Deleted
+          Archived
         </TabsTrigger>
       </TabsList>
       <TabsContent
@@ -90,7 +96,7 @@ const NotificationList = () => {
             <NotificationCard
               key={notification.uuid}
               notification={notification}
-              onDelete={() => onDelete(notification.uuid)}
+              onArchive={() => onArchive(notification.uuid)}
               isPending={isPending}
             />
           ))}
@@ -105,7 +111,7 @@ const NotificationList = () => {
             <NotificationCard
               key={notification.uuid}
               notification={notification}
-              onDelete={() => onDelete(notification.uuid)}
+              onArchive={() => onArchive(notification.uuid)}
               isPending={isPending}
             />
           ))}
@@ -120,13 +126,13 @@ const NotificationList = () => {
             <NotificationCard
               key={notification.uuid}
               notification={notification}
-              onDelete={() => onDelete(notification.uuid)}
+              onArchive={() => onArchive(notification.uuid)}
               isPending={isPending}
             />
           ))}
       </TabsContent>
       <TabsContent
-        value="deleted"
+        value="archived"
         className="flex-1 border border-border rounded-lg p-2 overflow-y-auto  space-y-1 sm:space-y-2"
       >
         {notifications
@@ -135,7 +141,7 @@ const NotificationList = () => {
             <NotificationCard
               key={notification.uuid}
               notification={notification}
-              onDelete={() => onDelete(notification.uuid)}
+              onArchive={() => onArchive(notification.uuid)}
               isPending={isPending}
             />
           ))}

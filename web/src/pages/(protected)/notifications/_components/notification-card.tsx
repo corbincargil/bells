@@ -1,15 +1,15 @@
 import type { NotificationWithWebhook } from "@/types/notification";
-import { DeleteNotificationButton } from "./notification-list/delete-notification-button";
+import { ArchiveNotificationButton } from "./notification-list/archive-notification-button";
 import { Link, useSearchParams } from "react-router";
 import dateFormatters from "@/lib/date-formatters";
 
 const NotificationCard = ({
   notification,
-  onDelete,
+  onArchive,
   isPending,
 }: {
   notification: NotificationWithWebhook;
-  onDelete: () => void;
+  onArchive: () => void;
   isPending: boolean;
 }) => {
   const [searchParams] = useSearchParams();
@@ -50,7 +50,10 @@ const NotificationCard = ({
         </div>
       </div>
       <div className="self-center">
-        <DeleteNotificationButton onDelete={onDelete} isPending={isPending} />
+        <ArchiveNotificationButton
+          onArchive={onArchive}
+          isPending={isPending}
+        />
       </div>
     </Link>
   );

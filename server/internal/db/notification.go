@@ -243,30 +243,47 @@ func (db *Database) UpdateNotificationReadStatus(uuid string, readStatus bool) e
 	return nil
 }
 
-func (db *Database) SoftDeleteNotification(uuid string) error {
+func (db *Database) UpdateNotificationArchiveStatus(uuid string, archiveStatus bool) error {
 	query := `
         UPDATE notifications 
 		SET 
-		  is_deleted = true,
+		  is_archived = $2,
 		  updated_at = NOW()
 		WHERE uuid = $1
     `
 
-	result, err := db.db.Exec(query, uuid)
+	result, err := db.db.Exec(query, uuid, archiveStatus)
 	if err != nil {
-		log.Printf("Database error soft deleting notification: %v", err)
+		log.Printf("Database error updating is_archived status for notification: %v", err)
 		return fmt.Errorf("unexpected database error")
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		log.Printf("Error checking affected rows while soft deleting notification: %v", err)
-		return fmt.Errorf("error deleting notification")
+		log.Printf("Error checking affected rows while updating is_archived status for notification: %v", err)
+		return fmt.Errorf("error updating notification")
 	}
 
 	if rowsAffected == 0 {
-		log.Printf("Attempted to soft delete notification %s that does not exist: %v", uuid, err)
+		log.Printf("Attempted to is_archived status for notification %s that does not exist: %v", uuid, err)
 		return fmt.Errorf("notification not found")
+	}
+
+	return nil
+}
+
+func (db *Database) DeleteNotificationByUUID(uuid string) error {
+	query := `DELETE FROM notifications WHERE uuid = $1`
+
+	result, err := db.db.Exec(query, uuid)
+	if err != nil {
+		log.Printf("Error deleting notification %s: %v", uuid, err)
+		return fmt.Errorf("error deleting notification: %s", uuid)
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		return fmt.Errorf("no notification found with id: %s", uuid)
 	}
 
 	return nil
