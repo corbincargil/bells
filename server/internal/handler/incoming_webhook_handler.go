@@ -30,8 +30,6 @@ func (h *PublicWebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Reques
 		return
 	}
 
-	log.Println("Verified Webhook ✅")
-
 	//todo: create notification record and send push notification (ATOMIC)
 	var newNotificationParams model.Notification
 	newNotificationParams.Title = verifiedWebhook.NotificationTitle
@@ -53,6 +51,7 @@ func (h *PublicWebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Reques
 		return
 	}
 
+	//todo: cleanup/improve error handling
 	if len(userSubscriptions) == 0 {
 		log.Printf("No user subscriptions found")
 		return
@@ -70,8 +69,6 @@ func (h *PublicWebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Reques
 		apperrors.WriteJSONError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-
-	log.Printf("user sub: %s", userSubscriptions[0].Endpoint)
 
 	//todo: update lastUsed on the webhook
 }

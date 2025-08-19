@@ -48,6 +48,7 @@ func (v *V1Router) SetupRoutes() {
 
 	//* notifications
 	http.Handle("/api/v1/notifications", middleware.WithAuth(v.userService, v.notificationHandler))
+	http.Handle("/api/v1/notifications/", middleware.WithAuth(v.userService, v.notificationHandler))
 
 	//* webhooks
 	http.Handle("/api/v1/webhooks", middleware.WithAuth(v.userService, v.webhookHandler))

@@ -1,10 +1,15 @@
 import type { NotificationWithWebhook } from "@/types/notification";
 import formatRelativeTime from "@/lib/format-relative-time";
+import { DeleteNotificationButton } from "./notification-list/delete-notification-button";
 
 const NotificationCard = ({
   notification,
+  onDelete,
+  isPending,
 }: {
   notification: NotificationWithWebhook;
+  onDelete: () => void;
+  isPending: boolean;
 }) => {
   return (
     <div className="group w-full flex items-start gap-3 bg-card border border-border cursor-pointer rounded-lg p-4 hover:bg-accent/50 hover:shadow-sm transition-all duration-200">
@@ -28,6 +33,9 @@ const NotificationCard = ({
             {notification.webhookName}
           </span>
         </div>
+      </div>
+      <div className="self-center">
+        <DeleteNotificationButton onDelete={onDelete} isPending={isPending} />
       </div>
     </div>
   );

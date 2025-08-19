@@ -2,9 +2,9 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/corbincargil/bells/server/internal/apperrors"
 	"github.com/corbincargil/bells/server/internal/service"
@@ -20,12 +20,19 @@ func NewNotificationHandler(notificationService *service.NotificationService) *N
 }
 
 func (h *NotificationHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	path := req.URL.Path
+	pathSegments := strings.Split(strings.Trim(path, "/"), "/")
+
 	switch req.Method {
 	case http.MethodGet:
 		h.GetUserNotifications(w, req)
-	case http.MethodPost:
-		h.CreateNotification(w, req)
+	case http.MethodDelete:
+		if len(pathSegments) == 4 && pathSegments[2] == "notifications" {
+			notificationUuid := pathSegments[3]
+			h.SoftDeleteNotification(w, req, notificationUuid)
+		}
 	default:
+		log.Printf("Invalid request: method %s - path %s", req.Method, path)
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
@@ -56,6 +63,20 @@ func (h *NotificationHandler) GetUserNotifications(w http.ResponseWriter, req *h
 	w.Write(json)
 }
 
-func (h *NotificationHandler) CreateNotification(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintf(w, "Post request\n")
+func (h *NotificationHandler) SoftDeleteNotification(w http.ResponseWriter, req *http.Request, notificationUuid string) {
+	if notificationUuid == "" || len(notificationUuid) != 36 {
+		log.Printf("Invalid webhook UUID: %s", notificationUuid)
+		apperrors.WriteJSONError(w, http.StatusBadRequest, "invalid webhook ID")
+		return
+	}
+
+	err := h.notificationService.SoftDeleteNotification(notificationUuid)
+	if err != nil {
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 }

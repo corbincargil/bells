@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/SherClockHolmes/webpush-go"
@@ -30,6 +29,10 @@ func (s *NotificationService) CreateNotification(notification *model.Notificatio
 	return s.db.CreateNotification(notification)
 }
 
+func (s *NotificationService) SoftDeleteNotification(uuid string) error {
+	return s.db.SoftDeleteNotification(uuid)
+}
+
 func (s *NotificationService) SendPushNotification(newNotification *model.Notification, subscription *model.WebPushSubscription) error {
 	sub := &webpush.Subscription{}
 	sub.Endpoint = subscription.Endpoint
@@ -48,6 +51,5 @@ func (s *NotificationService) SendPushNotification(newNotification *model.Notifi
 		return err
 	}
 	defer resp.Body.Close()
-	log.Println("finished push notification")
 	return nil
 }

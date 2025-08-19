@@ -160,3 +160,32 @@ func (db *Database) CreateNotification(notification *model.Notification) (*model
 
 	return &n, nil
 }
+
+func (db *Database) SoftDeleteNotification(uuid string) error {
+	query := `
+        UPDATE notifications 
+		SET 
+		  is_deleted = true,
+		  updated_at = NOW()
+		WHERE uuid = $1
+    `
+
+	result, err := db.db.Exec(query, uuid)
+	if err != nil {
+		log.Printf("Database error soft deleting notification: %v", err)
+		return fmt.Errorf("unexpected database error")
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Printf("Error checking affected rows while soft deleting notification: %v", err)
+		return fmt.Errorf("error deleting notification")
+	}
+
+	if rowsAffected == 0 {
+		log.Printf("Attempted to soft delete notification %s that does not exist: %v", uuid, err)
+		return fmt.Errorf("notification not found")
+	}
+
+	return nil
+}
