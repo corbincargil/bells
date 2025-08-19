@@ -252,7 +252,7 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
                   type="button"
                   variant="secondary"
                   onClick={onTest}
-                  disabled={isPending}
+                  disabled={isPending || !webhook.isActive}
                 >
                   Test
                 </Button>

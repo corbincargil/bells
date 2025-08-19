@@ -17,7 +17,7 @@ export const createWebhookSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
   slug: z.string().min(1),
-  notificationTitle: z.string().min(1),
+  notificationTitle: z.string().min(1).max(100),
   notificationMessage: z.string().min(1),
   isActive: z.boolean(),
 });
@@ -27,7 +27,7 @@ export const updateWebhookSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
   slug: z.string().min(1),
-  notificationTitle: z.string().min(1),
+  notificationTitle: z.string().min(1).max(100),
   notificationMessage: z.string().min(1),
   isActive: z.boolean(),
 });
