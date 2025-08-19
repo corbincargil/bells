@@ -214,6 +214,35 @@ func (db *Database) CreateNotification(notification *model.Notification) (*model
 	return &n, nil
 }
 
+func (db *Database) UpdateNotificationReadStatus(uuid string, readStatus bool) error {
+	query := `
+        UPDATE notifications 
+		SET 
+		  is_read = $2,
+		  updated_at = NOW()
+		WHERE uuid = $1
+    `
+
+	result, err := db.db.Exec(query, uuid, readStatus)
+	if err != nil {
+		log.Printf("Database error updating is_read status for notification: %v", err)
+		return fmt.Errorf("unexpected database error")
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Printf("Error checking affected rows while updating is_read status for notification: %v", err)
+		return fmt.Errorf("error updating notification")
+	}
+
+	if rowsAffected == 0 {
+		log.Printf("Attempted to is_read status for notification %s that does not exist: %v", uuid, err)
+		return fmt.Errorf("notification not found")
+	}
+
+	return nil
+}
+
 func (db *Database) SoftDeleteNotification(uuid string) error {
 	query := `
         UPDATE notifications 

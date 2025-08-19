@@ -32,6 +32,12 @@ func (h *NotificationHandler) ServeHTTP(w http.ResponseWriter, req *http.Request
 			notificationUuid := pathSegments[3]
 			h.GetNotificationByID(w, req, notificationUuid)
 		}
+	case http.MethodPatch:
+		if len(pathSegments) == 4 && pathSegments[2] == "notifications" {
+			notificationUuid := pathSegments[3]
+			readStatus := req.URL.Query().Get("read")
+			h.UpdateNotificationReadStatus(w, req, notificationUuid, readStatus)
+		}
 	case http.MethodDelete:
 		if len(pathSegments) == 4 && pathSegments[2] == "notifications" {
 			notificationUuid := pathSegments[3]
@@ -72,7 +78,7 @@ func (h *NotificationHandler) GetUserNotifications(w http.ResponseWriter, req *h
 func (h *NotificationHandler) GetNotificationByID(w http.ResponseWriter, req *http.Request, notificationUuid string) {
 	userId, err := GetUserIDFromContext(req.Context())
 	if err != nil {
-		log.Printf("Could not find user %s in context: %v", userId, err)
+		log.Printf("Could not find user %d in context: %v", userId, err)
 		apperrors.WriteJSONError(w, http.StatusInternalServerError, "internal service error")
 		return
 	}
@@ -102,6 +108,36 @@ func (h *NotificationHandler) GetNotificationByID(w http.ResponseWriter, req *ht
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(json)
+}
+
+func (h *NotificationHandler) UpdateNotificationReadStatus(w http.ResponseWriter, req *http.Request, notificationUuid string, readStatus string) {
+	if notificationUuid == "" || len(notificationUuid) != 36 {
+		log.Printf("Invalid webhook UUID: %s", notificationUuid)
+		apperrors.WriteJSONError(w, http.StatusBadRequest, "invalid webhook ID")
+		return
+	}
+
+	var status bool
+	switch readStatus {
+	case "true":
+		status = true
+	case "false":
+		status = false
+	default:
+		log.Printf("Invalid readStatus: %s", readStatus)
+		apperrors.WriteJSONError(w, http.StatusBadRequest, "invalid 'read' param. must be 'true' or 'false'")
+		return
+	}
+
+	err := h.notificationService.UpdateNotificationReadStatus(notificationUuid, status)
+	if err != nil {
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 }
 
 func (h *NotificationHandler) SoftDeleteNotification(w http.ResponseWriter, req *http.Request, notificationUuid string) {

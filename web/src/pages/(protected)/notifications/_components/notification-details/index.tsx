@@ -12,6 +12,8 @@ import {
   LinkIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { usePatchReadStatus } from "@/lib/api/notificaitons";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface NotificationDetailsProps {
   notification: NotificationWithWebhook;
@@ -22,15 +24,33 @@ export const NotificationDetails = ({
   notification,
   onClose,
 }: NotificationDetailsProps) => {
+  const queryClient = useQueryClient();
+  const { mutate: patchReadStatus } = usePatchReadStatus();
+
   const handleMarkAsRead = () => {
     if (notification.isRead) return;
-    // TODO: Implement mark as read functionality
-    console.log("Mark as read:", notification.uuid);
+    patchReadStatus(
+      { notificationId: notification.uuid, isRead: true },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["notifications"] });
+          notification.isRead = true;
+        },
+      }
+    );
   };
 
   const handleMarkAsUnread = () => {
-    // TODO: Implement mark as unread functionality
-    console.log("Mark as unread:", notification.uuid);
+    if (!notification.isRead) return;
+    patchReadStatus(
+      { notificationId: notification.uuid, isRead: false },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["notifications"] });
+          notification.isRead = false;
+        },
+      }
+    );
   };
 
   const handleDelete = () => {
@@ -141,7 +161,7 @@ export const NotificationDetails = ({
             <Trash2 className="w-4 h-4" />
           </Button>
           <div className="flex gap-3">
-            {!notification.isRead ? (
+            {notification.isRead ? (
               <Button
                 type="button"
                 variant="outline"
@@ -155,7 +175,7 @@ export const NotificationDetails = ({
               <Button
                 type="button"
                 variant="outline"
-                onClick={handleMarkAsUnread}
+                onClick={handleMarkAsRead}
                 className="flex items-center gap-2"
               >
                 <MailOpen className="w-4 h-4" />

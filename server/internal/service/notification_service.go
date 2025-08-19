@@ -33,6 +33,10 @@ func (s *NotificationService) CreateNotification(notification *model.Notificatio
 	return s.db.CreateNotification(notification)
 }
 
+func (s *NotificationService) UpdateNotificationReadStatus(uuid string, readStatus bool) error {
+	return s.db.UpdateNotificationReadStatus(uuid, readStatus)
+}
+
 func (s *NotificationService) SoftDeleteNotification(uuid string) error {
 	return s.db.SoftDeleteNotification(uuid)
 }

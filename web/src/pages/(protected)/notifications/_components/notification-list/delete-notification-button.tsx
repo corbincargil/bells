@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 
 interface DeleteNotificationButtonProps {
-  onDelete: () => void;
+  onDelete: (e: React.MouseEvent) => void;
   isPending: boolean;
 }
 
@@ -15,7 +15,10 @@ export const DeleteNotificationButton = ({
       variant="ghost"
       type="button"
       disabled={isPending}
-      onClick={onDelete}
+      onClick={(e) => {
+        e.preventDefault();
+        onDelete(e);
+      }}
     >
       <X className="w-4 h-4" />
     </Button>

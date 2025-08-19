@@ -20,6 +20,23 @@ export const useNotification = (id: string) => {
   });
 };
 
+export const usePatchReadStatus = () => {
+  const { apiRequest } = useApiClient();
+
+  return useMutation({
+    mutationFn: ({
+      notificationId,
+      isRead,
+    }: {
+      notificationId: string;
+      isRead: boolean;
+    }) =>
+      apiRequest(`/notifications/${notificationId}/?read=${isRead}`, {
+        method: "PATCH",
+      }),
+  });
+};
+
 export const useDeleteNotification = () => {
   const { apiRequest } = useApiClient();
 
