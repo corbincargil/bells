@@ -1,9 +1,9 @@
-export interface NavLink {
+export interface NavLinkType {
   link: string;
   label: string;
 }
 
-export const links: NavLink[] = [
+export const links: NavLinkType[] = [
   {
     link: "/",
     label: "Home",
