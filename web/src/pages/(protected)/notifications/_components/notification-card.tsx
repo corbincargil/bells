@@ -1,6 +1,7 @@
 import type { NotificationWithWebhook } from "@/types/notification";
-import formatRelativeTime from "@/lib/format-relative-time";
 import { DeleteNotificationButton } from "./notification-list/delete-notification-button";
+import { Link } from "react-router";
+import dateFormatters from "@/lib/date-formatters";
 
 const NotificationCard = ({
   notification,
@@ -12,7 +13,10 @@ const NotificationCard = ({
   isPending: boolean;
 }) => {
   return (
-    <div className="group w-full flex items-start gap-3 bg-card border border-border cursor-pointer rounded-lg p-4 hover:bg-accent/50 hover:shadow-sm transition-all duration-200">
+    <Link
+      className="group w-full flex items-start gap-3 bg-card border border-border cursor-pointer rounded-lg p-4 hover:bg-accent/50 hover:shadow-sm transition-all duration-200"
+      to={`/notifications/details/${notification.uuid}`}
+    >
       {!notification.isRead ? (
         <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
       ) : (
@@ -27,7 +31,7 @@ const NotificationCard = ({
         </p>
         <div className="flex items-center justify-between pt-2">
           <time className="text-xs text-muted-foreground">
-            {formatRelativeTime(notification.createdAt)}
+            {dateFormatters.relativeTime(notification.createdAt)}
           </time>
           <span className="text-xs text-muted-foreground">
             {notification.webhookName}
@@ -37,7 +41,7 @@ const NotificationCard = ({
       <div className="self-center">
         <DeleteNotificationButton onDelete={onDelete} isPending={isPending} />
       </div>
-    </div>
+    </Link>
   );
 };
 

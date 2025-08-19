@@ -1,4 +1,4 @@
-export default function formatRelativeTime(date: Date | string): string {
+function relativeTime(date: Date | string): string {
   const now = new Date();
   const targetDate = new Date(date);
   const diffInMs = now.getTime() - targetDate.getTime();
@@ -23,3 +23,18 @@ export default function formatRelativeTime(date: Date | string): string {
 
   return "just now";
 }
+
+const fullDateTime = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+export default {
+  relativeTime,
+  fullDateTime,
+};

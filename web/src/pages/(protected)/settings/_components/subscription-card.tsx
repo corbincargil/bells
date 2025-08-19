@@ -1,6 +1,7 @@
 import type { Subscription } from "@/types/subscription";
 import { cn } from "@/lib/utils";
 import { Monitor, Smartphone, Laptop } from "lucide-react";
+import dateFormatters from "@/lib/date-formatters";
 
 export const SubscriptionCard = ({
   subscription,
@@ -49,7 +50,7 @@ export const SubscriptionCard = ({
           <time className="text-xs text-muted-foreground">
             Last used:{" "}
             {subscription.lastUsed
-              ? new Date(subscription.lastUsed).toLocaleDateString()
+              ? dateFormatters.relativeTime(subscription.lastUsed)
               : "Never"}
           </time>
           <div className="flex items-center gap-2">

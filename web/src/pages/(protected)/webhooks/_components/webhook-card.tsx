@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import formatRelativeTime from "@/lib/format-relative-time";
+import dateFormatters from "@/lib/date-formatters";
 import { cn } from "@/lib/utils";
 import type { Webhook } from "@/types/webhook";
 import { Check, Copy } from "lucide-react";
@@ -39,7 +39,9 @@ const WebhookCard = ({ webhook }: { webhook: Webhook }) => {
         <div className="flex items-center justify-between pt-2">
           <time className="text-xs text-muted-foreground">
             Last used:{" "}
-            {webhook.lastUsed ? formatRelativeTime(webhook.lastUsed) : ""}
+            {webhook.lastUsed
+              ? dateFormatters.relativeTime(webhook.lastUsed)
+              : ""}
           </time>
           <div className="flex items-center gap-2">
             <div
