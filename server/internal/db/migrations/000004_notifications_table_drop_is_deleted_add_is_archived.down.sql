@@ -1,0 +1,3 @@
+ALTER TABLE notifications 
+DROP COLUMN is_archived,
+ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE;

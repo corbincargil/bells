@@ -4,7 +4,7 @@ export interface Notification {
   message: string;
   url: string;
   isRead: boolean;
-  isDeleted: boolean;
+  isArchived: boolean;
   createdAt: string;
   updatedAt: string;
 }

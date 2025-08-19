@@ -85,7 +85,7 @@ const NotificationList = () => {
         className="flex-1 border border-border rounded-lg p-2 overflow-y-auto  space-y-1 sm:space-y-2"
       >
         {notifications
-          .filter((n) => !n.isDeleted)
+          .filter((n) => !n.isArchived)
           .map((notification) => (
             <NotificationCard
               key={notification.uuid}
@@ -100,7 +100,7 @@ const NotificationList = () => {
         className="flex-1 border border-border rounded-lg p-2 overflow-y-auto  space-y-1 sm:space-y-2"
       >
         {notifications
-          .filter((n) => !n.isRead && !n.isDeleted)
+          .filter((n) => !n.isRead && !n.isArchived)
           .map((notification) => (
             <NotificationCard
               key={notification.uuid}
@@ -115,7 +115,7 @@ const NotificationList = () => {
         className="flex-1 border border-border rounded-lg p-2 overflow-y-auto  space-y-1 sm:space-y-2"
       >
         {notifications
-          .filter((n) => n.isRead && !n.isDeleted)
+          .filter((n) => n.isRead && !n.isArchived)
           .map((notification) => (
             <NotificationCard
               key={notification.uuid}
@@ -130,7 +130,7 @@ const NotificationList = () => {
         className="flex-1 border border-border rounded-lg p-2 overflow-y-auto  space-y-1 sm:space-y-2"
       >
         {notifications
-          .filter((n) => n.isDeleted)
+          .filter((n) => n.isArchived)
           .map((notification) => (
             <NotificationCard
               key={notification.uuid}
