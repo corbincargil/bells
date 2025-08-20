@@ -32,6 +32,10 @@ func (s *WebhookService) UpdateWebhook(webhook *model.Webhook) (*model.Webhook, 
 	return s.db.UpdateWebhook(webhook)
 }
 
+func (s *WebhookService) UpdateWebhookLastUsedNow(webhookId string) error {
+	return s.db.UpdateWebhookLastUsedNow(webhookId)
+}
+
 func (s *WebhookService) DeleteWebhook(webhookId string) error {
 	return s.db.DeleteWebhookByID(webhookId)
 }

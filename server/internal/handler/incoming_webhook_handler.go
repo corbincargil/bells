@@ -72,5 +72,9 @@ func (h *PublicWebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Reques
 		return
 	}
 
-	//todo: update lastUsed on the webhook
+	err = h.webhookService.UpdateWebhookLastUsedNow(verifiedWebhook.UUID)
+	if err != nil {
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "internal service error")
+		return
+	}
 }
