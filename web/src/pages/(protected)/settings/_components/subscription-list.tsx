@@ -9,6 +9,7 @@ const SubscriptionList = () => {
   const [currentSubscription, setCurrentSubscription] =
     useState<PushSubscription | null>(null);
 
+  //todo: update subscription retries/syncing
   const { data: subscriptions, isLoading, error } = useSubscriptions();
 
   useEffect(() => {

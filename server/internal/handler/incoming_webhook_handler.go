@@ -37,6 +37,7 @@ func (h *PublicWebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Reques
 	newNotificationParams.UserID = verifiedWebhook.UserID
 
 	//todo: make atomic with sending push notification
+	//todo: could create notification from front end after successful push notification (need to make sure to prevent dupes)
 	newNotification, err := h.notificationService.CreateNotification(&newNotificationParams)
 	if err != nil {
 		log.Printf("Error creating notification: %v", err)
@@ -57,6 +58,7 @@ func (h *PublicWebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Reques
 		return
 	}
 
+	//todo: use concurrency to send to all the user's subscriptions
 	var sub model.WebPushSubscription
 	sub.Endpoint = userSubscriptions[0].Endpoint
 	sub.Keys.Auth = userSubscriptions[0].AuthKey

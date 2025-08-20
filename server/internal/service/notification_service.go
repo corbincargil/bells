@@ -54,8 +54,7 @@ func (s *NotificationService) SendPushNotification(newNotification *model.Notifi
 	payload := fmt.Appendf(nil, `{"title":"%s","message":"%s"}`, newNotification.Title, newNotification.Message)
 
 	resp, err := webpush.SendNotification(payload, sub, &webpush.Options{
-		//todo remove email address
-		Subscriber:      "corbin.carigl@gmail.com",
+		Subscriber:      os.Getenv("VAPID_EMAIL_ADDRESS"),
 		VAPIDPublicKey:  os.Getenv("VAPID_PUBLIC_KEY"),
 		VAPIDPrivateKey: os.Getenv("VAPID_PRIVATE_KEY"),
 		TTL:             30,

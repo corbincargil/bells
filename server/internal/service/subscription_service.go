@@ -13,6 +13,8 @@ func NewSubscriptionService(db *database.Database) *SubscriptionService {
 	return &SubscriptionService{db: db}
 }
 
+//todo: add functionality for handling retries and handling subscription synchronization gracefully
+
 func (s *SubscriptionService) GetUserSubscriptions(userId int) ([]model.PushSubscription, error) {
 	return s.db.GetSubscriptionsByUserId(userId)
 }

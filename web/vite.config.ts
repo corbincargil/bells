@@ -21,8 +21,8 @@ export default defineConfig(({ mode }) => {
           target: env.VITE_API_URL || "http://localhost:8090",
           changeOrigin: true,
         },
-        //todo: remove this after testing
-        "/b4SRZGqP": {
+        // Incoming webhooks: 8 alphanumeric chars + /webhook/ + slug
+        "^/[a-zA-Z0-9]{8}/webhook/[a-z0-9-]+$": {
           target: env.VITE_API_URL || "http://localhost:8090",
           changeOrigin: true,
         },

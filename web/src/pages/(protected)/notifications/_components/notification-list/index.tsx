@@ -77,27 +77,31 @@ const NotificationList = () => {
 
   return (
     <Tabs defaultValue="primary" value={tab} className="flex-1 h-[90%]">
-      <TabsList>
+      <TabsList className="grid grid-cols-4 w-full sm:w-[400px]">
         <TabsTrigger
           value="primary"
-          onClick={() => setSearchParams({ tab: "primary" }, { replace: true })}
+          className="cursor-pointer"
+          onClick={() => setSearchParams({ tab: "primary" })}
         >
           Primary
         </TabsTrigger>
         <TabsTrigger
           value="unread"
+          className="cursor-pointer"
           onClick={() => setSearchParams({ tab: "unread" })}
         >
           Unread
         </TabsTrigger>
         <TabsTrigger
           value="read"
+          className="cursor-pointer"
           onClick={() => setSearchParams({ tab: "read" })}
         >
           Read
         </TabsTrigger>
         <TabsTrigger
           value="archived"
+          className="cursor-pointer"
           onClick={() => setSearchParams({ tab: "archived" })}
         >
           Archived
