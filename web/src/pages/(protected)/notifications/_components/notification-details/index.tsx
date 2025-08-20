@@ -137,7 +137,7 @@ export const NotificationDetails = ({
             <label className="text-sm font-medium text-foreground block mb-2">
               Title
             </label>
-            <div className="text-foreground text-sm dark:bg-input/30 p-3 rounded-md border">
+            <div className="text-foreground text-sm text-wrap break-words max-h-[100px] dark:bg-input/30 p-3 rounded-md border overflow-y-auto">
               {notification.title}
             </div>
           </div>
@@ -147,7 +147,7 @@ export const NotificationDetails = ({
             <label className="text-sm font-medium text-foreground block mb-2">
               Message
             </label>
-            <div className="text-foreground text-sm dark:bg-input/30 p-3 rounded-md border">
+            <div className="text-foreground text-sm text-wrap break-words max-h-[300px] dark:bg-input/30 p-3 rounded-md border overflow-y-auto">
               {notification.message}
             </div>
           </div>

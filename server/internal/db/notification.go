@@ -171,14 +171,16 @@ func (db *Database) CreateNotification(notification *model.Notification) (*model
 	query := `
         INSERT INTO notifications (
             user_id,
+			webhook_id,
             title,
             message
 		)
-        VALUES ($1, $2, $3)
+        VALUES ($1, $2, $3, $4)
         RETURNING 
 			id,
 			uuid,
 			user_id,
+			webhook_id,
 			title,
 			message,
 			is_read,
@@ -191,12 +193,14 @@ func (db *Database) CreateNotification(notification *model.Notification) (*model
 	err := db.db.QueryRow(
 		query,
 		notification.UserID,
+		notification.WebhookID,
 		notification.Title,
 		notification.Message,
 	).Scan(
 		&n.ID,
 		&n.UUID,
 		&n.UserID,
+		&n.WebhookID,
 		&n.Title,
 		&n.Message,
 		&n.IsRead,

@@ -28,7 +28,7 @@ const NotificationCard = ({
 
   return (
     <Link
-      className="group w-full flex items-start gap-3 bg-card border border-border cursor-pointer rounded-lg p-4 hover:bg-accent/50 hover:shadow-sm transition-all duration-200"
+      className="group flex items-start gap-3 bg-card border border-border cursor-pointer rounded-lg p-4 hover:bg-accent/50 hover:shadow-sm transition-all duration-200"
       to={route()}
     >
       {!notification.isRead ? (
@@ -36,8 +36,8 @@ const NotificationCard = ({
       ) : (
         <div className="w-2 h-2 bg-background rounded-full mt-2 flex-shrink-0" />
       )}
-      <div className="flex flex-col w-full gap-1 sm:gap-2">
-        <h3 className="text-sm font-semibold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+      <div className="flex flex-col w-full gap-1 sm:gap-2 overflow-hidden">
+        <h3 className="text-sm font-semibold text-foreground line-clamp-1 overflow-ellipsis group-hover:text-primary transition-colors">
           {notification.title}
         </h3>
         <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed">

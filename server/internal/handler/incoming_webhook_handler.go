@@ -35,6 +35,7 @@ func (h *PublicWebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Reques
 	newNotificationParams.Title = verifiedWebhook.NotificationTitle
 	newNotificationParams.Message = verifiedWebhook.NotificationMessage
 	newNotificationParams.UserID = verifiedWebhook.UserID
+	newNotificationParams.WebhookID = &verifiedWebhook.ID
 
 	//todo: make atomic with sending push notification
 	//todo: could create notification from front end after successful push notification (need to make sure to prevent dupes)
