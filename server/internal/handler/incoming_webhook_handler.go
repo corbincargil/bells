@@ -29,6 +29,7 @@ func (h *PublicWebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Reques
 		apperrors.WriteJSONError(w, http.StatusNotFound, err.Error())
 		return
 	}
+	//todo: implement rate-limiting
 
 	//todo: create notification record and send push notification (ATOMIC)
 	var newNotificationParams model.Notification
@@ -59,7 +60,7 @@ func (h *PublicWebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Reques
 		return
 	}
 
-	//todo: use concurrency to send to all the user's subscriptions
+	//todo: use concurrency to send to all the user's subscriptions (use background job?)
 	var sub model.WebPushSubscription
 	sub.Endpoint = userSubscriptions[0].Endpoint
 	sub.Keys.Auth = userSubscriptions[0].AuthKey

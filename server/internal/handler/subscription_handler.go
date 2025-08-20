@@ -40,6 +40,8 @@ func (h *SubscriptionHandler) ServeHTTP(w http.ResponseWriter, req *http.Request
 	}
 }
 
+// todo: need to handle retries, synchronization, and un-subscribing
+
 func (h *SubscriptionHandler) GetUserSubscriptions(w http.ResponseWriter, req *http.Request) {
 	userId, err := GetUserIDFromContext(req.Context())
 	if err != nil {

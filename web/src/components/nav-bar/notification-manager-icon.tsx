@@ -73,6 +73,7 @@ export const NotificationManagerIcon = () => {
         <DropdownMenuItem onClick={onRetry} disabled={permission === "granted"}>
           Subscribe
         </DropdownMenuItem>
+        {/* // todo: need to add unsubscribe */}
         <DropdownMenuItem onClick={onRetry} disabled={permission !== "granted"}>
           Unsubscribe
         </DropdownMenuItem>

@@ -18,12 +18,12 @@ export default defineConfig(({ mode }) => {
       port: 3000,
       proxy: {
         "/api": {
-          target: env.VITE_API_URL || "http://localhost:8090",
+          target: env.VITE_API_URL || "http://localhost:8080",
           changeOrigin: true,
         },
         // Incoming webhooks: 8 alphanumeric chars + /webhook/ + slug
         "^/[a-zA-Z0-9]{8}/webhook/[a-z0-9-]+$": {
-          target: env.VITE_API_URL || "http://localhost:8090",
+          target: env.VITE_API_URL || "http://localhost:8080",
           changeOrigin: true,
         },
       },
