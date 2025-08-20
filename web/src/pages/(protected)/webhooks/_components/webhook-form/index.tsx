@@ -11,6 +11,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,9 +25,11 @@ import {
   useUpdateWebhook,
 } from "@/lib/api/webhooks";
 import { useQueryClient } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Loader2, ClipboardCopy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { DeleteWebhookButton } from "../delete-webhook-button";
+import slugify from "@/lib/slugify";
+import { useEffect, useState } from "react";
 
 interface WebhookFormProps {
   webhook?: Webhook;
@@ -39,6 +46,8 @@ const defaultValues: CreateWebhook = {
 };
 
 export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
+  const [isCopied, setIsCopied] = useState(false);
+
   const formSchema = webhook ? updateWebhookSchema : createWebhookSchema;
   const initialValues = webhook
     ? { ...webhook, description: webhook.description ?? "" }
@@ -50,6 +59,17 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
   });
 
   const queryClient = useQueryClient();
+
+  const copyToClipboard = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (isCopied || !webhook) return;
+    const url = import.meta.env.VITE_BASE_URL + webhook.endpoint;
+    navigator.clipboard.writeText(url);
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 4000);
+  };
 
   const { mutate: createWebhookMutation, isPending: isCreating } =
     useCreateWebhook();
@@ -99,7 +119,7 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
       return;
     }
 
-    fetch(`/b4SRZGqP/webhook/${webhook.slug}`, {
+    fetch(webhook.endpoint, {
       method: "POST",
     });
   };
@@ -120,6 +140,16 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
     });
   };
 
+  useEffect(() => {
+    const name = form.watch("name");
+    if (name && !webhook) {
+      const generatedSlug = slugify(name);
+      form.setValue("slug", generatedSlug);
+    } else {
+      form.setValue("slug", webhook?.slug ?? "");
+    }
+  }, [form.watch("name"), webhook]);
+
   const isPending = isCreating || isUpdating || isDeleting;
 
   return (
@@ -128,6 +158,27 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
         <h2 className="text-lg font-semibold text-foreground">
           {webhook ? "Update Webhook" : "Create Webhook"}
         </h2>
+        {webhook && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                className="text-sm text-muted-foreground flex items-center gap-2"
+                onClick={copyToClipboard}
+              >
+                {isCopied ? (
+                  <Check className="w-6 h-6 cursor-pointer" />
+                ) : (
+                  <ClipboardCopy className="w-6 h-6 cursor-pointer" />
+                )}
+                <span>{webhook?.endpoint}</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              {isCopied ? "Copied!" : "Copy"}
+            </TooltipContent>
+          </Tooltip>
+        )}
       </div>
 
       <div className="flex-1 p-4 sm:p-6">
@@ -226,7 +277,7 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
                   <FormControl>
                     <Textarea
                       placeholder="Description"
-                      className="max-h-[400px]"
+                      className="sm:max-h-[300px] max-h-[100px]"
                       {...field}
                       value={field.value ?? ""}
                     />
@@ -236,7 +287,7 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
               )}
             />
 
-            <div className="bg-muted/10 p-4 sm:p-6 border-t border-border">
+            <div className="bg-muted/10 py-4 sm:py-6 border-t border-border">
               <div className="flex gap-3">
                 {webhook && (
                   <DeleteWebhookButton

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -14,10 +15,11 @@ import (
 
 type WebhookHandler struct {
 	webhookService *service.WebhookService
+	userService    *service.UserService
 }
 
-func NewWebhookHandler(webhookService *service.WebhookService) *WebhookHandler {
-	return &WebhookHandler{webhookService: webhookService}
+func NewWebhookHandler(webhookService *service.WebhookService, userService *service.UserService) *WebhookHandler {
+	return &WebhookHandler{webhookService: webhookService, userService: userService}
 }
 
 func (h *WebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -153,10 +155,20 @@ func (h *WebhookHandler) CreateWebhook(w http.ResponseWriter, req *http.Request)
 		return
 	}
 
+	userPrefix, err := h.userService.GetUserPrefixByID(userId)
+	if err != nil || userPrefix == "" {
+		log.Printf("Error fetching user prefix: %v", err)
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "internal service error")
+		return
+	}
+
+	endpoint := fmt.Sprintf("/%s/webhook/%s", userPrefix, requestBody.Slug)
+
 	webhookParams := model.Webhook{
 		UserID:              userId,
 		Name:                requestBody.Name,
 		Slug:                requestBody.Slug,
+		Endpoint:            endpoint,
 		NotificationTitle:   requestBody.NotificationTitle,
 		NotificationMessage: requestBody.NotificationMessage,
 		IsActive:            isActive,
@@ -212,6 +224,15 @@ func (h *WebhookHandler) UpdateWebhook(w http.ResponseWriter, req *http.Request)
 		return
 	}
 
+	userPrefix, err := h.userService.GetUserPrefixByID(userId)
+	if err != nil || userPrefix == "" {
+		log.Printf("Error fetching user prefix: %v", err)
+		apperrors.WriteJSONError(w, http.StatusInternalServerError, "internal service error")
+		return
+	}
+
+	endpoint := fmt.Sprintf("/%s/webhook/%s", userPrefix, requestBody.Slug)
+
 	webhook, err := h.webhookService.GetWebhookByID(requestBody.UUID)
 	if err != nil {
 		if strings.Contains(err.Error(), "no webhooks found") {
@@ -236,6 +257,7 @@ func (h *WebhookHandler) UpdateWebhook(w http.ResponseWriter, req *http.Request)
 		Name:                requestBody.Name,
 		Description:         requestBody.Description,
 		Slug:                requestBody.Slug,
+		Endpoint:            endpoint,
 		NotificationTitle:   requestBody.NotificationTitle,
 		NotificationMessage: requestBody.NotificationMessage,
 		IsActive:            isActive,

@@ -23,14 +23,14 @@ type V1Router struct {
 	subscriptionHandler  *handler.SubscriptionHandler
 }
 
-func NewV1Router(db *database.Database, n *service.NotificationService, w *service.WebhookService, s *service.SubscriptionService) *V1Router {
+func NewV1Router(db *database.Database, n *service.NotificationService, w *service.WebhookService, s *service.SubscriptionService, u *service.UserService) *V1Router {
 	return &V1Router{
 		db:                   db,
 		userService:          service.NewUserService(db),
 		publicHealthHandler:  handler.NewPublicHealthHandler(db),
 		publicWebhookHandler: handler.NewPublicWebhookHandler(w, n, s),
 		notificationHandler:  handler.NewNotificationHandler(n),
-		webhookHandler:       handler.NewWebhookHandler(w),
+		webhookHandler:       handler.NewWebhookHandler(w, u),
 		subscriptionHandler:  handler.NewSubscriptionHandler(s),
 	}
 }

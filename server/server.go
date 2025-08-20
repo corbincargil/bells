@@ -25,8 +25,9 @@ func main() {
 	notificationService := service.NewNotificationService(db)
 	webhookService := service.NewWebhookService(db)
 	subscriptionService := service.NewSubscriptionService(db)
+	userService := service.NewUserService(db)
 
-	v1router := router.NewV1Router(db, notificationService, webhookService, subscriptionService)
+	v1router := router.NewV1Router(db, notificationService, webhookService, subscriptionService, userService)
 	v1router.SetupRoutes()
 
 	port := os.Getenv("PORT")

@@ -38,6 +38,17 @@ func (db *Database) GetUserIdByPrefix(prefix string) (int, error) {
 	return userId, nil
 }
 
+func (db *Database) GetUserPrefixByID(internalID int) (string, error) {
+	var userPrefix string
+	if err := db.db.QueryRow("SELECT user_prefix FROM users WHERE id = $1", internalID).Scan(&userPrefix); err != nil {
+		if err == sql.ErrNoRows {
+			return "", fmt.Errorf("no users found with clerk user id: %d", internalID)
+		}
+		return "", fmt.Errorf("could not find user with id: %d", internalID)
+	}
+	return userPrefix, nil
+}
+
 func (db *Database) CreateUser(userData CreateUserParams) (*model.User, error) {
 	var user model.User
 

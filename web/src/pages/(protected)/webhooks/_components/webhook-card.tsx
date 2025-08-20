@@ -15,9 +15,10 @@ const WebhookCard = ({ webhook }: { webhook: Webhook }) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const copyToClipboard = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
+    e.preventDefault();
     if (isCopied) return;
-    navigator.clipboard.writeText(webhook.slug);
+    const url = import.meta.env.VITE_BASE_URL + webhook.endpoint;
+    navigator.clipboard.writeText(url);
     setIsCopied(true);
     setTimeout(() => {
       setIsCopied(false);

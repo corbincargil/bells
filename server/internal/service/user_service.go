@@ -42,6 +42,10 @@ func (s *UserService) GetOrCreateUser(clerkUserID string) (*model.User, error) {
 	return s.CreateUser(clerkUserID)
 }
 
+func (s *UserService) GetUserPrefixByID(internalID int) (string, error) {
+	return s.db.GetUserPrefixByID(internalID)
+}
+
 func (s *UserService) GenerateUserPrefix() (string, error) {
 	const MAX_TRIES int = 10
 	const PREFIX_LENGTH int = 8
