@@ -22,8 +22,6 @@ const NotificationList = () => {
   const { mutate: archiveNotification, isPending } = usePatchArchiveStatus();
 
   const onArchive = (notificationId: string) => {
-    if (!notificationId) return;
-
     archiveNotification(
       {
         notificationId,
@@ -37,6 +35,25 @@ const NotificationList = () => {
         onError: (e) => {
           queryClient.invalidateQueries({ queryKey: ["notifications"] });
           toast.error(`Failed to archive notification: ${e.message}`);
+        },
+      }
+    );
+  };
+
+  const onUndoArchive = (notificationId: string) => {
+    archiveNotification(
+      {
+        notificationId,
+        isArchived: false,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["notifications"] });
+          toast.success("Notification unarchived successfully");
+        },
+        onError: (e) => {
+          queryClient.invalidateQueries({ queryKey: ["notifications"] });
+          toast.error(`Failed to unarchive notification: ${e.message}`);
         },
       }
     );
@@ -97,6 +114,7 @@ const NotificationList = () => {
               key={notification.uuid}
               notification={notification}
               onArchive={() => onArchive(notification.uuid)}
+              onUndoArchive={() => onUndoArchive(notification.uuid)}
               isPending={isPending}
             />
           ))}
@@ -112,6 +130,7 @@ const NotificationList = () => {
               key={notification.uuid}
               notification={notification}
               onArchive={() => onArchive(notification.uuid)}
+              onUndoArchive={() => onUndoArchive(notification.uuid)}
               isPending={isPending}
             />
           ))}
@@ -127,6 +146,7 @@ const NotificationList = () => {
               key={notification.uuid}
               notification={notification}
               onArchive={() => onArchive(notification.uuid)}
+              onUndoArchive={() => onUndoArchive(notification.uuid)}
               isPending={isPending}
             />
           ))}
@@ -142,6 +162,7 @@ const NotificationList = () => {
               key={notification.uuid}
               notification={notification}
               onArchive={() => onArchive(notification.uuid)}
+              onUndoArchive={() => onUndoArchive(notification.uuid)}
               isPending={isPending}
             />
           ))}

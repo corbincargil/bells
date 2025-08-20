@@ -61,12 +61,8 @@ export const NotificationDetails = ({
       {
         onSuccess: () => {
           toast.success("Notification archived successfully");
-          queryClient.invalidateQueries({
-            queryKey: ["notifications"],
-            refetchType: "all",
-          });
-          notification.isArchived = true;
-          notification.updatedAt = new Date().toISOString();
+          queryClient.invalidateQueries({ queryKey: ["notifications"] });
+          queryClient.invalidateQueries({ queryKey: ["notification"] });
         },
         onError: (e) => {
           toast.error(`Failed to archive notification: ${e.message}`);
@@ -82,8 +78,7 @@ export const NotificationDetails = ({
         onSuccess: () => {
           toast.success("Notification unarchived successfully");
           queryClient.invalidateQueries({ queryKey: ["notifications"] });
-          notification.isArchived = false;
-          notification.updatedAt = new Date().toISOString();
+          queryClient.invalidateQueries({ queryKey: ["notification"] });
         },
         onError: (e) => {
           toast.error(`Failed to unarchive notification: ${e.message}`);
@@ -238,7 +233,7 @@ export const NotificationDetails = ({
                 className="flex items-center gap-2"
               >
                 <Mail className="w-4 h-4" />
-                Mark as Unread
+                Mark Unread
               </Button>
             ) : (
               <Button
@@ -248,7 +243,7 @@ export const NotificationDetails = ({
                 className="flex items-center gap-2"
               >
                 <MailOpen className="w-4 h-4" />
-                Mark as Read
+                Mark Read
               </Button>
             )}
             <Button type="button" variant="outline" onClick={onClose}>

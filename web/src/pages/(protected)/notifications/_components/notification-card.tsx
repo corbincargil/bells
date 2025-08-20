@@ -2,14 +2,17 @@ import type { NotificationWithWebhook } from "@/types/notification";
 import { ArchiveNotificationButton } from "./notification-list/archive-notification-button";
 import { Link, useSearchParams } from "react-router";
 import dateFormatters from "@/lib/date-formatters";
+import { UndoArchiveButton } from "./notification-list/undo-archive-button";
 
 const NotificationCard = ({
   notification,
   onArchive,
+  onUndoArchive,
   isPending,
 }: {
   notification: NotificationWithWebhook;
   onArchive: () => void;
+  onUndoArchive: () => void;
   isPending: boolean;
 }) => {
   const [searchParams] = useSearchParams();
@@ -50,10 +53,17 @@ const NotificationCard = ({
         </div>
       </div>
       <div className="self-center">
-        <ArchiveNotificationButton
-          onArchive={onArchive}
-          isPending={isPending}
-        />
+        {notification.isArchived ? (
+          <UndoArchiveButton
+            onUndoArchive={onUndoArchive}
+            isPending={isPending}
+          />
+        ) : (
+          <ArchiveNotificationButton
+            onArchive={onArchive}
+            isPending={isPending}
+          />
+        )}
       </div>
     </Link>
   );

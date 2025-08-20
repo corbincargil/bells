@@ -1,37 +1,37 @@
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { Undo2 } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-interface ArchiveNotificationButtonProps {
-  onArchive: (e: React.MouseEvent) => void;
+interface UndoArchiveButtonProps {
+  onUndoArchive: (e: React.MouseEvent) => void;
   isPending: boolean;
 }
 
-export const ArchiveNotificationButton = ({
-  onArchive,
+export const UndoArchiveButton = ({
+  onUndoArchive,
   isPending,
-}: ArchiveNotificationButtonProps) => {
+}: UndoArchiveButtonProps) => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
           variant="ghost"
-          type="button"
-          disabled={isPending}
+          size="icon"
           onClick={(e) => {
             e.preventDefault();
-            onArchive(e);
+            onUndoArchive(e);
           }}
+          disabled={isPending}
         >
-          <X className="w-4 h-4" />
+          <Undo2 className="w-4 h-4" />
         </Button>
       </TooltipTrigger>
       <TooltipContent>
-        <p>Archive</p>
+        <p>Restore</p>
       </TooltipContent>
     </Tooltip>
   );
