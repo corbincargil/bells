@@ -36,8 +36,7 @@ export const NotificationDetails = ({
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["notifications"] });
-          notification.isRead = true;
-          notification.updatedAt = new Date().toISOString();
+          queryClient.invalidateQueries({ queryKey: ["notification"] });
         },
       }
     );
@@ -50,8 +49,7 @@ export const NotificationDetails = ({
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["notifications"] });
-          notification.isRead = false;
-          notification.updatedAt = new Date().toISOString();
+          queryClient.invalidateQueries({ queryKey: ["notification"] });
         },
       }
     );
@@ -63,7 +61,10 @@ export const NotificationDetails = ({
       {
         onSuccess: () => {
           toast.success("Notification archived successfully");
-          queryClient.invalidateQueries({ queryKey: ["notifications"] });
+          queryClient.invalidateQueries({
+            queryKey: ["notifications"],
+            refetchType: "all",
+          });
           notification.isArchived = true;
           notification.updatedAt = new Date().toISOString();
         },
@@ -105,9 +106,12 @@ export const NotificationDetails = ({
   };
 
   useEffect(() => {
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       handleMarkAsRead();
-    }, 2000);
+    }, 3500);
+    return () => {
+      clearTimeout(timeout);
+    };
   }, []);
 
   return (
