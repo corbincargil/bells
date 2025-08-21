@@ -46,6 +46,7 @@ func (s *NotificationService) DeleteNotificationByUUID(uuid string) error {
 }
 
 func (s *NotificationService) SendPushNotification(newNotification *model.Notification, subscription *model.WebPushSubscription) error {
+	// todo: validate notification title/message content length
 	sub := &webpush.Subscription{}
 	sub.Endpoint = subscription.Endpoint
 	sub.Keys.Auth = subscription.Keys.Auth
