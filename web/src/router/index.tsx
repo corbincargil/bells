@@ -8,7 +8,7 @@ import { NotificationDetailsLayout } from "@/layouts/notification-details-layout
 import { NotificationDetailsLoading } from "@/pages/(protected)/notifications/_components/notification-details/loading";
 import Loading from "@/pages/loading";
 
-const Home = lazy(() => import("@/pages/(protected)/home"));
+const Home = lazy(() => import("@/pages/home"));
 const Notifications = lazy(() => import("@/pages/(protected)/notifications"));
 const Webhooks = lazy(() => import("@/pages/(protected)/webhooks"));
 const Settings = lazy(() => import("@/pages/(protected)/settings"));
@@ -40,20 +40,25 @@ export enum AppRoutes {
 export default function AppRouter() {
   return (
     <Routes>
-      {/* Public routes */}
-      <Route path={AppRoutes.SIGN_IN} element={<PublicLayout />}>
+      <Route element={<PublicLayout />}>
         <Route
-          index
+          path={AppRoutes.HOME}
+          element={
+            <Suspense fallback={<Loading />}>
+              <Home />
+            </Suspense>
+          }
+        />
+        <Route
+          path={AppRoutes.SIGN_IN}
           element={
             <Suspense fallback={<Loading />}>
               <SignIn />
             </Suspense>
           }
         />
-      </Route>
-      <Route path={AppRoutes.SIGN_UP} element={<PublicLayout />}>
         <Route
-          index
+          path={AppRoutes.SIGN_UP}
           element={
             <Suspense fallback={<Loading />}>
               <SignUp />
@@ -62,17 +67,7 @@ export default function AppRouter() {
         />
       </Route>
 
-      {/* Protected routes */}
-      <Route path={AppRoutes.HOME} element={<RootLayout />}>
-        <Route
-          index
-          element={
-            <Suspense fallback={<Loading />}>
-              <Home />
-            </Suspense>
-          }
-        />
-
+      <Route element={<RootLayout />}>
         <Route
           path={AppRoutes.NOTIFICATIONS}
           element={
