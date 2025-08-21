@@ -17,36 +17,36 @@ export const NotificationDetailsLoading = () => {
         <div className="bg-muted/20 p-4 rounded-lg border space-y-4">
           {/* Title */}
           <div>
-            <div className="h-4 w-8 bg-muted rounded animate-pulse mb-2" />
-            <div className="h-12 bg-muted rounded animate-pulse border" />
+            <div className="h-4 w-8 bg-muted-foreground/20 rounded animate-pulse mb-2" />
+            <div className="h-12 bg-muted-foreground/20 rounded animate-pulse border" />
           </div>
 
           {/* Message */}
           <div>
-            <div className="h-4 w-16 bg-muted rounded animate-pulse mb-2" />
-            <div className="h-20 bg-muted rounded animate-pulse border" />
+            <div className="h-4 w-16 bg-muted-foreground/20 rounded animate-pulse mb-2" />
+            <div className="h-20 bg-muted-foreground/20 rounded animate-pulse border" />
           </div>
 
           {/* Webhook */}
           <div>
-            <div className="h-4 w-20 bg-muted rounded animate-pulse mb-2" />
-            <div className="h-12 bg-muted rounded animate-pulse" />
+            <div className="h-4 w-20 bg-muted-foreground/20 rounded animate-pulse mb-2" />
+            <div className="h-12 bg-muted-foreground/20 rounded animate-pulse" />
           </div>
 
           {/* Timestamps */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <div className="h-4 w-14 bg-muted rounded animate-pulse mb-2" />
+              <div className="h-4 w-14 bg-muted-foreground/20 rounded animate-pulse mb-2" />
               <div className="flex items-center gap-2">
-                <div className="h-4 w-4 bg-muted rounded animate-pulse" />
-                <div className="h-4 w-32 bg-muted rounded animate-pulse" />
+                <div className="h-4 w-4 bg-muted-foreground/20 rounded animate-pulse" />
+                <div className="h-4 w-32 bg-muted-foreground/20 rounded animate-pulse" />
               </div>
             </div>
             <div>
-              <div className="h-4 w-16 bg-muted rounded animate-pulse mb-2" />
+              <div className="h-4 w-16 bg-muted-foreground/20 rounded animate-pulse mb-2" />
               <div className="flex items-center gap-2">
-                <div className="h-4 w-4 bg-muted rounded animate-pulse" />
-                <div className="h-4 w-32 bg-muted rounded animate-pulse" />
+                <div className="h-4 w-4 bg-muted-foreground/20 rounded animate-pulse" />
+                <div className="h-4 w-32 bg-muted-foreground/20 rounded animate-pulse" />
               </div>
             </div>
           </div>
@@ -55,11 +55,14 @@ export const NotificationDetailsLoading = () => {
 
       {/* Actions Section */}
       <div className="bg-muted/10 p-4 sm:p-6 border-t border-border">
-        <div className="flex gap-3 justify-between">
-          <div className="h-10 w-20 bg-muted rounded animate-pulse" />
-          <div className="flex gap-3">
-            <div className="h-10 w-32 bg-muted rounded animate-pulse" />
-            <div className="h-10 w-16 bg-muted rounded animate-pulse" />
+        <div className="flex flex-col-reverse sm:flex-row gap-3 justify-between">
+          <div className="flex flex-col-reverse sm:flex-row gap-3">
+            <div className="h-10 w-full sm:w-20 bg-muted-foreground/20 rounded animate-pulse" />
+            <div className="h-10 w-full sm:w-20 bg-muted-foreground/20 rounded animate-pulse" />
+          </div>
+          <div className="flex flex-col-reverse sm:flex-row gap-3">
+            <div className="h-10 w-full sm:w-32 bg-muted-foreground/20 rounded animate-pulse" />
+            <div className="h-10 w-full sm:w-16 bg-muted-foreground/20 rounded animate-pulse" />
           </div>
         </div>
       </div>

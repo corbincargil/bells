@@ -16,12 +16,6 @@ self.addEventListener("push", (e) => {
   e.waitUntil(self.registration.showNotification(data.title, options));
 });
 
-// todo: relocate manager icon to left of Honk ✅
-// todo: add banner for development mode ✅
-// todo: update details/form buttons on mobile ✅
-// todo: don't need toast success for archive/unarchive ✅
-// todo: fix copy to clipboard in prod ✅
-// todo: add height to header ✅
 // todo: update app font
 // todo: add better home page or remove
 // todo: figure out why the app does not load in browswer on mobile
