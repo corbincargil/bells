@@ -27,6 +27,7 @@ export const DeleteWebhookButton = ({
       <AlertDialogTrigger asChild>
         <Button variant="destructive" type="button" disabled={isPending}>
           <Trash2 className="w-4 h-4" />
+          <span className="sm:hidden  block">Delete</span>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent container={root ?? undefined}>

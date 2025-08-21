@@ -37,7 +37,6 @@ export const WebhookFormLayout = () => {
       direction={isMobile ? "bottom" : "right"}
       container={document.getElementById("root")}
       onOpenChange={onOpenChange}
-      autoFocus
       handleOnly={!isMobile}
     >
       <DrawerContent className="md:!w-[600px] md:!max-w-[600px]">

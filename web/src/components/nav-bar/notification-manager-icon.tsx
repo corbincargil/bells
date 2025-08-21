@@ -44,12 +44,15 @@ export const NotificationManagerIcon = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative hover:text-primary">
+        <Button
+          variant="outline"
+          className="relative rounded-full hover:text-primary"
+        >
           <LucideBellIcon className="!w-6 !h-6" />
           {permission === "granted" ? (
             <Check className="absolute -top-1 -right-1 bg-green-500 select-none text-white rounded-full w-4 h-4 text-sm font-bold flex items-center justify-center" />
           ) : (
-            <span className="absolute -top-1 -right-1 bg-red-500 select-none text-white rounded-full w-4 h-4 text-sm font-bold flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 bg-yellow-500 select-none text-white rounded-full w-4 h-4 text-sm font-bold flex items-center justify-center">
               !
             </span>
           )}
@@ -58,7 +61,7 @@ export const NotificationManagerIcon = () => {
       <DropdownMenuContent
         container={root ?? undefined}
         side="bottom"
-        align="end"
+        align="start"
       >
         <DropdownMenuLabel>
           Notifications: {permission === "granted" ? "Enabled" : "Disabled"}

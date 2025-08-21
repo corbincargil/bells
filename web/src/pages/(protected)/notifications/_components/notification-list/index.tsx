@@ -31,7 +31,6 @@ const NotificationList = () => {
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["notifications"] });
-          toast.success("Notification archived successfully");
         },
         onError: (e) => {
           queryClient.invalidateQueries({ queryKey: ["notifications"] });

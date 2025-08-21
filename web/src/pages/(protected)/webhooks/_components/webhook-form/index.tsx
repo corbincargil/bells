@@ -25,7 +25,7 @@ import {
   useUpdateWebhook,
 } from "@/lib/api/webhooks";
 import { useQueryClient } from "@tanstack/react-query";
-import { Loader2, ClipboardCopy, Check } from "lucide-react";
+import { Loader2, ClipboardCopy, Check, Send, Save, X } from "lucide-react";
 import { toast } from "sonner";
 import { DeleteWebhookButton } from "../delete-webhook-button";
 import slugify from "@/lib/slugify";
@@ -154,8 +154,8 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
 
   return (
     <div className="h-full max-h-[90vh] flex flex-col bg-background">
-      <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
-        <h2 className="text-lg font-semibold text-foreground">
+      <div className="flex items-center justify-between p-4 pt-0 md:pt-4 border-b border-border">
+        <h2 className="text-md sm:text-lg font-semibold text-foreground">
           {webhook ? "Update Webhook" : "Create Webhook"}
         </h2>
         {webhook && (
@@ -163,7 +163,7 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
             <TooltipTrigger asChild>
               <Button
                 variant="outline"
-                className="text-sm text-muted-foreground flex items-center gap-2"
+                className="text-xs sm:text-sm text-muted-foreground flex items-center gap-2"
                 onClick={copyToClipboard}
               >
                 {isCopied ? (
@@ -288,36 +288,43 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
             />
 
             <div className="bg-muted/10 py-4 sm:py-6 border-t border-border">
-              <div className="flex gap-3">
-                {webhook && (
-                  <DeleteWebhookButton
-                    onDelete={onDelete}
-                    isPending={isPending}
-                  />
-                )}
-                <Button type="submit" className="flex-1" disabled={isPending}>
-                  {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {webhook ? "Update Webhook" : "Create Webhook"}
-                </Button>
-                {webhook && (
+              <div className="flex flex-col-reverse sm:flex-row gap-3 justify-between">
+                <div className="flex flex-col-reverse sm:flex-row gap-2">
+                  {webhook && (
+                    <DeleteWebhookButton
+                      onDelete={onDelete}
+                      isPending={isPending}
+                    />
+                  )}
+                  {webhook && (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={onTest}
+                      disabled={isPending || !webhook.isActive}
+                    >
+                      <Send className="w-4 h-4" />
+                      Test
+                    </Button>
+                  )}
+                </div>
+                <div className="flex flex-col-reverse sm:flex-row gap-2">
+                  <Button type="submit" disabled={isPending}>
+                    {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                    <Save className="w-4 h-4" />
+                    {webhook ? "Save" : "Create Webhook"}
+                  </Button>
+
                   <Button
                     type="button"
-                    variant="secondary"
-                    onClick={onTest}
-                    disabled={isPending || !webhook.isActive}
+                    variant="outline"
+                    onClick={onCancel}
+                    disabled={isPending}
                   >
-                    Test
+                    <X className="w-4 h-4 sm:hidden" />
+                    Close
                   </Button>
-                )}
-                <Button
-                  type="button"
-                  className="text-muted-foreground"
-                  variant="outline"
-                  onClick={onCancel}
-                  disabled={isPending}
-                >
-                  Cancel
-                </Button>
+                </div>
               </div>
             </div>
           </form>
