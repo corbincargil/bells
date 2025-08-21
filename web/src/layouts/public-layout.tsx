@@ -1,5 +1,7 @@
 import NavBar from "@/components/nav-bar";
+import { NotificationManagerIcon } from "@/components/nav-bar/notification-manager-icon";
 import { cn } from "@/lib/utils";
+import { SignedIn } from "@clerk/clerk-react";
 import { Link, Outlet } from "react-router";
 
 const RootLayout = () => {
@@ -16,6 +18,9 @@ const RootLayout = () => {
                     Honk
                   </h1>
                 </Link>
+                <SignedIn>
+                  <NotificationManagerIcon />
+                </SignedIn>
               </div>
               <NavBar />
             </div>
