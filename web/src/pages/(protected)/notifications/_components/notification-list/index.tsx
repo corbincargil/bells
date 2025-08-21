@@ -22,6 +22,7 @@ const NotificationList = () => {
   const { mutate: archiveNotification, isPending } = usePatchArchiveStatus();
 
   const onArchive = (notificationId: string) => {
+    // todo: add optimistic updates
     archiveNotification(
       {
         notificationId,
@@ -63,6 +64,7 @@ const NotificationList = () => {
 
   if (error) return <NotificationListFallback />;
 
+  // todo: update so that this is shown if no notifications on the selected tab
   if (!notifications || notifications.length === 0)
     return (
       <div className="text-center py-12">

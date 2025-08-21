@@ -70,11 +70,19 @@ export const NotificationManagerIcon = () => {
             : "You are not subscribed to notifications"}
         </p>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={onRetry} disabled={permission === "granted"}>
+        <DropdownMenuItem
+          onClick={onRetry}
+          disabled={permission === "granted"}
+          className="cursor-pointer"
+        >
           Subscribe
         </DropdownMenuItem>
         {/* // todo: need to add unsubscribe */}
-        <DropdownMenuItem onClick={onRetry} disabled={permission !== "granted"}>
+        <DropdownMenuItem
+          onClick={onRetry}
+          disabled={permission !== "granted"}
+          className="cursor-pointer"
+        >
           Unsubscribe
         </DropdownMenuItem>
       </DropdownMenuContent>
