@@ -28,7 +28,9 @@ const RootLayout = () => {
               <div className={`${MAX_WIDTH} mx-auto px-4 sm:px-6 lg:px-8`}>
                 <div className="flex justify-between items-center h-16">
                   <div className="flex gap-6 items-center">
-                    <h1 className="text-3xl font-bold text-foreground">Honk</h1>
+                    <h1 className="text-3xl font-bold text-foreground font-brand">
+                      Honk
+                    </h1>
                     <NotificationManagerIcon />
                   </div>
                   <NavBar />
@@ -47,9 +49,7 @@ const RootLayout = () => {
             <Toaster expand richColors position="top-right" />
 
             <footer className="bg-background border-t border-border">
-              <div
-                className={`${MAX_WIDTH} mx-auto pb-4 sm:px-6 lg:px-8 py-2 sm:py-4`}
-              >
+              <div className={`${MAX_WIDTH} mx-auto pb-6 py-4 sm:py-6`}>
                 <p className="text-center text-foreground text-sm">
                   <a href="https://github.com/corbincargil/bells">
                     &copy; 2025 Honk App

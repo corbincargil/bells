@@ -8,7 +8,7 @@ const Notifications = () => {
   return (
     <div className="h-full flex flex-col">
       <div className="pb-2 sm:pb-4">
-        <h1 className="text-xl sm:text-2xl font-semibold text-foreground tracking-tight">
+        <h1 className="text-xl sm:text-2xl font-semibold text-foreground tracking-tight font-heading">
           Notifications
         </h1>
         <p className="text-sm sm:text-base text-muted-foreground mt-0 sm:mt-2">

@@ -6,11 +6,14 @@ export const NotificationListFallback = () => {
   const navigate = useNavigate();
   return (
     <div className="p-4 flex flex-col items-center h-full w-full border border-border rounded-lg">
-      <h1 className="mt-12 text-md font-semibold">Oh no!</h1>
+      <h1 className="mt-12 text-md font-semibold font-playful">Oh no!</h1>
       <p className="text-sm text-muted-foreground text-center">
         An error occurred while loading your notifications 😢
       </p>
-      <Button onClick={() => navigate(AppRoutes.HOME)} className="mt-4">
+      <Button
+        onClick={() => navigate(AppRoutes.HOME)}
+        className="mt-4 font-playful"
+      >
         Go Home
       </Button>
     </div>

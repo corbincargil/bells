@@ -119,6 +119,19 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+
+  .font-brand {
+    font-family: "Sour Gummy", cursive, sans-serif;
+  }
+
+  .font-heading {
+    font-family: "Sour Gummy", cursive, sans-serif;
+  }
+
+  .font-playful {
+    font-family: "Sour Gummy", cursive, sans-serif;
   }
 }
 

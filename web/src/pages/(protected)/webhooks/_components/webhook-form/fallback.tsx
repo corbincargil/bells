@@ -17,11 +17,16 @@ export const WebhookFormFallback = ({ mode }: WebhookFormFallbackProps) => {
       </div>
 
       <div className="p-4 flex flex-col items-center h-full w-full">
-        <h1 className="mt-12 text-md font-semibold text-foreground">Oh no!</h1>
+        <h1 className="mt-12 text-md font-semibold text-foreground font-playful">
+          Oh no!
+        </h1>
         <p className="text-sm text-muted-foreground text-center">
           An error occurred while loading the form 😢
         </p>
-        <Button onClick={() => navigate(AppRoutes.WEBHOOKS)} className="mt-4">
+        <Button
+          onClick={() => navigate(AppRoutes.WEBHOOKS)}
+          className="mt-4 font-playful"
+        >
           Go Back
         </Button>
       </div>

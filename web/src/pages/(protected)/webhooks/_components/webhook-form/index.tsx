@@ -25,7 +25,15 @@ import {
   useUpdateWebhook,
 } from "@/lib/api/webhooks";
 import { useQueryClient } from "@tanstack/react-query";
-import { Loader2, ClipboardCopy, Check, Send, Save, X } from "lucide-react";
+import {
+  Loader2,
+  ClipboardCopy,
+  Check,
+  Send,
+  Save,
+  X,
+  Plus,
+} from "lucide-react";
 import { toast } from "sonner";
 import { DeleteWebhookButton } from "../delete-webhook-button";
 import slugify from "@/lib/slugify";
@@ -155,7 +163,7 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
   return (
     <div className="h-full max-h-[90vh] flex flex-col bg-background">
       <div className="flex items-center justify-between p-4 pt-0 md:pt-4 border-b border-border">
-        <h2 className="text-md sm:text-lg font-semibold text-foreground">
+        <h2 className="text-md sm:text-lg font-semibold text-foreground font-heading">
           {webhook ? "Update Webhook" : "Create Webhook"}
         </h2>
         {webhook && (
@@ -313,10 +321,18 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
                   )}
                 </div>
                 <div className="flex flex-col-reverse sm:flex-row gap-2">
-                  <Button type="submit" disabled={isPending}>
+                  <Button
+                    type="submit"
+                    disabled={isPending}
+                    className="font-playful"
+                  >
                     {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                    <Save className="w-4 h-4" />
-                    {webhook ? "Save" : "Create Webhook"}
+                    {webhook ? (
+                      <Save className="w-4 h-4" />
+                    ) : (
+                      <Plus className="w-4 h-4" />
+                    )}
+                    {webhook ? "Save" : "Create"}
                   </Button>
 
                   <Button

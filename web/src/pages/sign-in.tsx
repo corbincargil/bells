@@ -12,7 +12,7 @@ const SignIn = () => {
         <div className="flex items-center justify-center min-h-[30vh]">
           <div className="bg-background border border-border rounded-lg p-8 shadow-sm max-w-md w-full">
             <div className="text-center space-y-4">
-              <h2 className="text-2xl font-semibold text-foreground">
+              <h2 className="text-2xl font-semibold text-foreground font-playful">
                 Welcome back!
               </h2>
               <p className="text-muted-foreground">

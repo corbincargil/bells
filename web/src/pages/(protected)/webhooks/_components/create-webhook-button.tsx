@@ -10,7 +10,7 @@ export const CreateWebhookButton = () => {
   };
 
   return (
-    <Button onClick={onButtonClick}>
+    <Button onClick={onButtonClick} className="font-playful">
       <div className="flex items-center gap-2">
         <Plus className="w-4 h-4" />
         <span>Create Webhook</span>

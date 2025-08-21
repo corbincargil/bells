@@ -67,10 +67,10 @@ const NotificationList = () => {
   if (!notifications || notifications.length === 0)
     return (
       <div className="text-center py-12">
-        <h3 className="mt-2 text-md font-semibold text-foreground">
+        <h3 className="mt-2 text-xl font-semibold text-foreground font-playful">
           No notifications
         </h3>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-lg text-muted-foreground font-playful">
           You're all caught up! 🎉
         </p>
       </div>
