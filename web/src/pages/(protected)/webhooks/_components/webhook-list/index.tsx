@@ -20,6 +20,7 @@ const WebhookList = () => {
         <p className="mt-1 text-sm text-muted-foreground">
           Get started by creating your first webhook.
         </p>
+        {/* // todo: navigate to create webhook page */}
         <Button className="mt-4">Create Webhook</Button>
       </div>
     );
