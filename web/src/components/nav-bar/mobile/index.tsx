@@ -1,6 +1,6 @@
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Menu } from "lucide-react";
-import type { NavLink } from "../types";
+import type { NavLinkType } from "../types";
 import { Link, useLocation } from "react-router";
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
@@ -10,7 +10,7 @@ const MobileNavBar = ({
   links,
   className,
 }: {
-  links: NavLink[];
+  links: NavLinkType[];
   className?: string;
 }) => {
   const [open, setOpen] = useState(false);

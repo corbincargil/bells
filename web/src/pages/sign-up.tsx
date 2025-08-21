@@ -6,7 +6,7 @@ const SignIn = () => {
   return (
     <>
       <SignedOut>
-        <ClerkSignUp forceRedirectUrl={AppRoutes.ROOT} />
+        <ClerkSignUp forceRedirectUrl={AppRoutes.HOME} />
       </SignedOut>
       <SignedIn>
         <div className="flex items-center justify-center min-h-[30vh]">

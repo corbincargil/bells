@@ -145,6 +145,7 @@ const usePushNotifications = () => {
 
   return {
     ...state,
+    subscribe,
     unsubscribe,
     checkPermission,
     requestPermission,
