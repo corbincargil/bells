@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"os"
 
@@ -15,14 +16,22 @@ type Database struct {
 func DatabaseConnect() *Database {
 	sqlDB, err := sql.Open("pgx", os.Getenv("DATABASE_URL"))
 	if err != nil {
-		log.Fatal("Error connecting to database:, ", err)
+		log.Print("Error opening database:, ", err)
 	}
 
-	log.Println("Connected to database")
+	if err := sqlDB.Ping(); err != nil {
+		log.Print("Error connecting to database:", err)
+		sqlDB.Close()
+		return &Database{db: nil}
+	}
+
 	return &Database{db: sqlDB}
 }
 
 func (d *Database) Ping() error {
+	if d.db == nil {
+		return errors.New("database not connected")
+	}
 	return d.db.Ping()
 }
 

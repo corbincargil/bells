@@ -2,7 +2,7 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/corbincargil/bells/server/internal/apperrors"
@@ -19,7 +19,7 @@ func NewPublicHealthHandler(db *database.Database) *HealthHandler {
 
 func (h *HealthHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if err := h.db.Ping(); err != nil {
-		fmt.Printf("Error in pinging db in /health-check: %v", err)
+		log.Printf("Error in pinging db at /api/v1/health: %v", err)
 		apperrors.WriteJSONError(w, http.StatusServiceUnavailable, "service unavailable")
 		return
 	}
