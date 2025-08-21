@@ -201,7 +201,7 @@ export const NotificationDetails = ({
         </div>
 
         {/* Actions Section */}
-        <div className="bg-muted/10 py-4 sm:py-6 border-t border-border">
+        <div className="bg-muted/10 pt-2 pb-6 sm:py-6 border-t border-border">
           <div className="flex flex-col-reverse sm:flex-row gap-3 justify-between">
             <div className="flex flex-col-reverse sm:flex-row gap-3">
               <DeleteNotificationButton

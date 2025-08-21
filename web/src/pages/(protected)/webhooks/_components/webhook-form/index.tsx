@@ -163,15 +163,19 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
             <TooltipTrigger asChild>
               <Button
                 variant="outline"
-                className="text-xs sm:text-sm text-muted-foreground flex items-center gap-2"
+                className="text-xs sm:text-sm text-muted-foreground p-1 sm:p-2"
                 onClick={copyToClipboard}
               >
-                {isCopied ? (
-                  <Check className="w-6 h-6 cursor-pointer" />
-                ) : (
-                  <ClipboardCopy className="w-6 h-6 cursor-pointer" />
-                )}
-                <span>{webhook?.endpoint}</span>
+                <div className="max-w-[180px] sm:max-w-[400px] flex items-center gap-2">
+                  {isCopied ? (
+                    <Check className="w-6 h-6 cursor-pointer" />
+                  ) : (
+                    <ClipboardCopy className="w-6 h-6 cursor-pointer" />
+                  )}
+                  <span className="truncate min-w-0 flex-1">
+                    {webhook?.endpoint}
+                  </span>
+                </div>
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom">
@@ -287,7 +291,7 @@ export const WebhookForm = ({ webhook, onCancel }: WebhookFormProps) => {
               )}
             />
 
-            <div className="bg-muted/10 py-4 sm:py-6 border-t border-border">
+            <div className="bg-muted/10 pt-2 pb-6 sm:py-6 border-t border-border">
               <div className="flex flex-col-reverse sm:flex-row gap-3 justify-between">
                 <div className="flex flex-col-reverse sm:flex-row gap-2">
                   {webhook && (
