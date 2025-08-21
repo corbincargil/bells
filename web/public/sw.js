@@ -15,3 +15,14 @@ self.addEventListener("push", (e) => {
   };
   e.waitUntil(self.registration.showNotification(data.title, options));
 });
+
+// todo: relocate manager icon to left of Honk
+// todo: update details/form buttons on mobile
+// todo: add height to header
+// todo: don't need toast success for archive/unarchive
+// todo: add better home page or remove
+// todo: figure out why the app does not load in browswer on mobile
+// todo: fix copy to clipboard in prod
+// todo: figure out & fix bug with external services saying "failed" but notifications going through
+// todo: add cron for automatically clearing archived notifications. (include ability for users to change this setting and edit frequency)
+// todo: add "clear all" notifications button
