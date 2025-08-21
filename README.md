@@ -1,8 +1,11 @@
 # Honk 📢
-
 > Turn any HTTP request into an instant notification
 
-## 🎯 Mission
+<div align="center">
+  <img width="400" height="400" alt="honk-logo" src="https://github.com/user-attachments/assets/ad6a6a3f-9e3f-45cb-b269-2a299d9d5905" />
+</div>
+
+## Motivation
 
 I'm a developer who got tired of drowning in spam emails and missing the important stuff. So I built Honk to centralize all the alerts I actually care about from my projects and services. Plus, I wanted an excuse to learn Go.
 
