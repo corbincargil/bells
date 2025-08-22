@@ -1,31 +1,14 @@
 import NavBar from "@/components/nav-bar";
-import { NotificationManagerIcon } from "@/components/nav-bar/notification-manager-icon";
+import { PushNotificationProvider } from "@/contexts/push-notification-context";
 import { cn } from "@/lib/utils";
-import { SignedIn } from "@clerk/clerk-react";
-import { Link, Outlet } from "react-router";
+import { Outlet } from "react-router";
 
-const RootLayout = () => {
+const PublicLayout = () => {
   const MAX_WIDTH = "max-w-5xl";
   return (
-    <>
+    <PushNotificationProvider>
       <div className="min-h-screen text-foreground bg-background flex flex-col">
-        <header className="bg-background shadow-sm border-b border-border">
-          <div className={cn("mx-auto px-4 sm:px-6 lg:px-8", MAX_WIDTH)}>
-            <div className="flex justify-between items-center h-16">
-              <div className="flex gap-6 items-center">
-                <Link to="/">
-                  <h1 className="text-3xl font-bold text-foreground font-brand">
-                    Honk
-                  </h1>
-                </Link>
-                <SignedIn>
-                  <NotificationManagerIcon />
-                </SignedIn>
-              </div>
-              <NavBar />
-            </div>
-          </div>
-        </header>
+        <NavBar width={MAX_WIDTH} />
 
         <main
           className={cn(
@@ -46,8 +29,8 @@ const RootLayout = () => {
           </div>
         </footer>
       </div>
-    </>
+    </PushNotificationProvider>
   );
 };
 
-export default RootLayout;
+export default PublicLayout;
