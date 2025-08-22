@@ -3,7 +3,7 @@ import { Outlet } from "react-router";
 import { RedirectToSignIn, SignedIn, SignedOut } from "@clerk/clerk-react";
 import { AppRoutes } from "@/router";
 import { ErrorBoundary } from "react-error-boundary";
-import { GlobalErrorFallback } from "@/components/error/global-error-fallback";
+import { PageLevelFallback } from "@/components/error/page-level-fallback";
 import { Toaster } from "@/components/ui/sonner";
 import { useEffect } from "react";
 import registerServiceWorker from "@/lib/register-sw";
@@ -33,7 +33,7 @@ const RootLayout = () => {
                 MAX_WIDTH
               )}
             >
-              <ErrorBoundary fallback={<GlobalErrorFallback />}>
+              <ErrorBoundary fallback={<PageLevelFallback />}>
                 <Outlet />
               </ErrorBoundary>
             </main>
