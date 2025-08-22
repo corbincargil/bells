@@ -4,7 +4,6 @@ import { NotificationListFallback } from "./_components/notification-list/fallba
 import { NotificationStatusBanner } from "@/components/banners/notification-status-banner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Outlet, useSearchParams } from "react-router";
-import { useQueryClient } from "@tanstack/react-query";
 import { useNotifications } from "@/lib/api/notificaitons";
 import { NotificationListLoading } from "./_components/notification-list/loading";
 
@@ -12,7 +11,6 @@ const tabs = ["primary", "unread", "read", "archived"] as const;
 
 const Notifications = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const queryClient = useQueryClient();
 
   const tab = (searchParams.get("tab") ?? "primary") as (typeof tabs)[number];
 
@@ -71,7 +69,6 @@ const Notifications = () => {
           >
             <NotificationList
               notifications={notifications?.filter((n) => !n.isArchived)}
-              queryClient={queryClient}
             />
           </TabsContent>
           <TabsContent
@@ -82,7 +79,6 @@ const Notifications = () => {
               notifications={notifications?.filter(
                 (n) => !n.isRead && !n.isArchived
               )}
-              queryClient={queryClient}
             />
           </TabsContent>
           <TabsContent
@@ -93,7 +89,6 @@ const Notifications = () => {
               notifications={notifications?.filter(
                 (n) => n.isRead && !n.isArchived
               )}
-              queryClient={queryClient}
             />
           </TabsContent>
           <TabsContent
@@ -102,7 +97,6 @@ const Notifications = () => {
           >
             <NotificationList
               notifications={notifications?.filter((n) => n.isArchived)}
-              queryClient={queryClient}
             />
           </TabsContent>
         </Tabs>

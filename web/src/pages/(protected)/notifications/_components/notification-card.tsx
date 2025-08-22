@@ -3,19 +3,18 @@ import { ArchiveNotificationButton } from "./notification-list/archive-notificat
 import { Link, useSearchParams } from "react-router";
 import dateFormatters from "@/lib/date-formatters";
 import { UndoArchiveButton } from "./notification-list/undo-archive-button";
+import { usePatchArchiveStatus } from "@/lib/api/notificaitons";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const NotificationCard = ({
   notification,
-  onArchive,
-  onUndoArchive,
-  isPending,
 }: {
   notification: NotificationWithWebhook;
-  onArchive: () => void;
-  onUndoArchive: () => void;
-  isPending: boolean;
 }) => {
   const [searchParams] = useSearchParams();
+  const queryClient = useQueryClient();
+  const { mutate: archiveNotification, isPending } = usePatchArchiveStatus();
 
   const route = () => {
     const base = `/notifications/details/${notification.uuid}`;
@@ -24,6 +23,69 @@ const NotificationCard = ({
       return `${base}?tab=${tab}`;
     }
     return base;
+  };
+
+  const onArchive = () => {
+    const previousData = queryClient.getQueryData<NotificationWithWebhook[]>([
+      "notifications",
+    ]);
+
+    if (previousData) {
+      const optimisticData = previousData.map((n) =>
+        n.uuid === notification.uuid ? { ...n, isArchived: true } : n
+      );
+      queryClient.setQueryData(["notifications"], optimisticData);
+    }
+
+    archiveNotification(
+      {
+        notificationId: notification.uuid,
+        isArchived: true,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["notifications"] });
+        },
+        onError: (e) => {
+          if (previousData) {
+            queryClient.setQueryData(["notifications"], previousData);
+          }
+          toast.error(`Failed to archive notification: ${e.message}`);
+        },
+      }
+    );
+  };
+
+  const onUndoArchive = () => {
+    const previousData = queryClient.getQueryData<NotificationWithWebhook[]>([
+      "notifications",
+    ]);
+
+    if (previousData) {
+      const optimisticData = previousData.map((n) =>
+        n.uuid === notification.uuid ? { ...n, isArchived: false } : n
+      );
+      queryClient.setQueryData(["notifications"], optimisticData);
+    }
+
+    archiveNotification(
+      {
+        notificationId: notification.uuid,
+        isArchived: false,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["notifications"] });
+          toast.success("Notification unarchived successfully");
+        },
+        onError: (e) => {
+          if (previousData) {
+            queryClient.setQueryData(["notifications"], previousData);
+          }
+          toast.error(`Failed to unarchive notification: ${e.message}`);
+        },
+      }
+    );
   };
 
   return (
