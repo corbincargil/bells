@@ -1,24 +1,16 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  useNotifications,
-  usePatchArchiveStatus,
-} from "@/lib/api/notificaitons";
-import NotificationCard from "../notification-card";
-import { NotificationListLoading } from "./loading";
-import { NotificationListFallback } from "./fallback";
-import { useQueryClient } from "@tanstack/react-query";
+import { usePatchArchiveStatus } from "@/lib/api/notificaitons";
+import type { QueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useSearchParams } from "react-router";
+import NotificationCard from "../notification-card";
+import type { NotificationWithWebhook } from "@/types/notification";
 
-const tabs = ["primary", "unread", "read", "archived"] as const;
-
-const NotificationList = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const queryClient = useQueryClient();
-
-  const tab = (searchParams.get("tab") ?? "primary") as (typeof tabs)[number];
-
-  const { data: notifications, isLoading, error } = useNotifications();
+const NotificationList = ({
+  notifications,
+  queryClient,
+}: {
+  notifications: NotificationWithWebhook[] | undefined;
+  queryClient: QueryClient;
+}) => {
   const { mutate: archiveNotification, isPending } = usePatchArchiveStatus();
 
   const onArchive = (notificationId: string) => {
@@ -59,11 +51,6 @@ const NotificationList = () => {
     );
   };
 
-  if (isLoading) return <NotificationListLoading />;
-
-  if (error) return <NotificationListFallback />;
-
-  // todo: update so that this is shown if no notifications on the selected tab
   if (!notifications || notifications.length === 0)
     return (
       <div className="text-center py-12">
@@ -77,102 +64,17 @@ const NotificationList = () => {
     );
 
   return (
-    <Tabs defaultValue="primary" value={tab} className="flex-1 h-[90%]">
-      <TabsList className="grid grid-cols-4 w-full sm:w-[400px]">
-        <TabsTrigger
-          value="primary"
-          className="cursor-pointer"
-          onClick={() => setSearchParams({ tab: "primary" })}
-        >
-          Primary
-        </TabsTrigger>
-        <TabsTrigger
-          value="unread"
-          className="cursor-pointer"
-          onClick={() => setSearchParams({ tab: "unread" })}
-        >
-          Unread
-        </TabsTrigger>
-        <TabsTrigger
-          value="read"
-          className="cursor-pointer"
-          onClick={() => setSearchParams({ tab: "read" })}
-        >
-          Read
-        </TabsTrigger>
-        <TabsTrigger
-          value="archived"
-          className="cursor-pointer"
-          onClick={() => setSearchParams({ tab: "archived" })}
-        >
-          Archived
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent
-        value="primary"
-        className="flex-1 border border-border rounded-lg p-2 overflow-y-auto  space-y-1 sm:space-y-2"
-      >
-        {notifications
-          .filter((n) => !n.isArchived)
-          .map((notification) => (
-            <NotificationCard
-              key={notification.uuid}
-              notification={notification}
-              onArchive={() => onArchive(notification.uuid)}
-              onUndoArchive={() => onUndoArchive(notification.uuid)}
-              isPending={isPending}
-            />
-          ))}
-      </TabsContent>
-      <TabsContent
-        value="unread"
-        className="flex-1 border border-border rounded-lg p-2 overflow-y-auto  space-y-1 sm:space-y-2"
-      >
-        {notifications
-          .filter((n) => !n.isRead && !n.isArchived)
-          .map((notification) => (
-            <NotificationCard
-              key={notification.uuid}
-              notification={notification}
-              onArchive={() => onArchive(notification.uuid)}
-              onUndoArchive={() => onUndoArchive(notification.uuid)}
-              isPending={isPending}
-            />
-          ))}
-      </TabsContent>
-      <TabsContent
-        value="read"
-        className="flex-1 border border-border rounded-lg p-2 overflow-y-auto  space-y-1 sm:space-y-2"
-      >
-        {notifications
-          .filter((n) => n.isRead && !n.isArchived)
-          .map((notification) => (
-            <NotificationCard
-              key={notification.uuid}
-              notification={notification}
-              onArchive={() => onArchive(notification.uuid)}
-              onUndoArchive={() => onUndoArchive(notification.uuid)}
-              isPending={isPending}
-            />
-          ))}
-      </TabsContent>
-      <TabsContent
-        value="archived"
-        className="flex-1 border border-border rounded-lg p-2 overflow-y-auto  space-y-1 sm:space-y-2"
-      >
-        {notifications
-          .filter((n) => n.isArchived)
-          .map((notification) => (
-            <NotificationCard
-              key={notification.uuid}
-              notification={notification}
-              onArchive={() => onArchive(notification.uuid)}
-              onUndoArchive={() => onUndoArchive(notification.uuid)}
-              isPending={isPending}
-            />
-          ))}
-      </TabsContent>
-    </Tabs>
+    <>
+      {notifications.map((n) => (
+        <NotificationCard
+          key={n.uuid}
+          notification={n}
+          onArchive={() => onArchive(n.uuid)}
+          onUndoArchive={() => onUndoArchive(n.uuid)}
+          isPending={isPending}
+        />
+      ))}
+    </>
   );
 };
 
