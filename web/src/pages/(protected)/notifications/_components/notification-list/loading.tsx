@@ -1,6 +1,6 @@
 export const NotificationListLoading = () => {
   return (
-    <div className="space-y-4 w-full">
+    <div className="space-y-4 w-full flex-1 border border-border rounded-lg p-2">
       <div className="animate-pulse">
         {[...Array(3)].map((_, i) => (
           <div
