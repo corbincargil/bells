@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/SherClockHolmes/webpush-go"
@@ -10,11 +11,31 @@ import (
 )
 
 type NotificationService struct {
-	db *database.Database
+	db       *database.Database
+	jobQueue chan Job
+	quit     chan bool
+}
+
+type Job struct {
+	Notification    model.Notification
+	WebSubscription model.WebPushSubscription
 }
 
 func NewNotificationService(db *database.Database) *NotificationService {
-	return &NotificationService{db: db}
+	poolSize := 20
+	queueSize := 1000
+
+	s := &NotificationService{
+		db:       db,
+		jobQueue: make(chan Job, queueSize),
+		quit:     make(chan bool),
+	}
+
+	for range poolSize {
+		go s.worker()
+	}
+
+	return s
 }
 
 func (s *NotificationService) GetUserNotifications(userId int) ([]model.Notification, error) {
@@ -65,4 +86,23 @@ func (s *NotificationService) SendPushNotification(newNotification *model.Notifi
 	}
 	defer resp.Body.Close()
 	return nil
+}
+
+func (s *NotificationService) SubmitJob(job Job) {
+	s.jobQueue <- job
+}
+
+func (s *NotificationService) worker() {
+	for {
+		select {
+		case job := <-s.jobQueue:
+			err := s.SendPushNotification(&job.Notification, &job.WebSubscription)
+			if err != nil {
+				log.Printf("Push notification failed: %v", err)
+			}
+			log.Printf("Push notification sent")
+		case <-s.quit:
+			return
+		}
+	}
 }

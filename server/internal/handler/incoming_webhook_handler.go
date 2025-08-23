@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 
@@ -60,18 +61,21 @@ func (h *PublicWebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Reques
 		return
 	}
 
-	//todo: use concurrency to send to all the user's subscriptions (use background job?)
-	var sub model.WebPushSubscription
-	sub.Endpoint = userSubscriptions[0].Endpoint
-	sub.Keys.Auth = userSubscriptions[0].AuthKey
-	sub.Keys.P256dh = userSubscriptions[0].P256dhKey
+	for i := range userSubscriptions {
+		sub := model.WebPushSubscription{
+			Endpoint: userSubscriptions[i].Endpoint,
+			Keys: model.SubKeys{
+				Auth:   userSubscriptions[i].AuthKey,
+				P256dh: userSubscriptions[i].P256dhKey,
+			},
+		}
 
-	//todo: cleanup/improve error handling
-	err = h.notificationService.SendPushNotification(newNotification, &sub)
-	if err != nil {
-		log.Printf("Error sending push notification: %v", err)
-		apperrors.WriteJSONError(w, http.StatusInternalServerError, err.Error())
-		return
+		job := service.Job{
+			Notification:    *newNotification,
+			WebSubscription: sub,
+		}
+
+		h.notificationService.SubmitJob(job)
 	}
 
 	err = h.webhookService.UpdateWebhookLastUsedNow(verifiedWebhook.UUID)
@@ -79,4 +83,8 @@ func (h *PublicWebhookHandler) ServeHTTP(w http.ResponseWriter, req *http.Reques
 		apperrors.WriteJSONError(w, http.StatusInternalServerError, "internal service error")
 		return
 	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 }
