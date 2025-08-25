@@ -20,7 +20,9 @@ const NavBar = ({ width }: { width: string }) => {
                 Honk
               </h1>
             </Link>
-            <NotificationManagerIcon />
+            <SignedIn>
+              <NotificationManagerIcon />
+            </SignedIn>
           </div>
           <div className="flex items-center justify-between">
             <SignedIn>
